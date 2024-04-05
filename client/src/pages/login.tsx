@@ -11,12 +11,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { getToken } from "@/components/api/auth";
+import { loginAPI } from "@/components/api/authApi";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const navigate = useNavigate();
+
   const formSchema = z.object({
-    username: z.string().min(2).max(50),
-    password: z.string().min(8).max(50),
+    username: z.string().min(2).max(50).trim(),
+    password: z.string().min(4).max(50).trim(),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -27,12 +30,10 @@ const Login = () => {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    /* 
-      Implement API call to login
-      based on response navigate to next page or throw error
-    */
-  }
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    const response = await loginAPI(values);
+    if (response.status === 200) navigate("/");
+  };
 
   return (
     <div className="flex flex-col justify-center items-center h-screen w-screen">

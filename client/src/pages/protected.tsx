@@ -22,11 +22,13 @@ const Protected = () => {
   }, []);
 
   return (
-    <div className="flex flex-col h-screen w-screen">
+    <div className="flex flex-col">
       <TopBar />
-      <div className="flex w-full h-full">
+      <div className="flex">
         <SideBar />
-        <Outlet />
+        <div className="ms-20 w-full">
+          <Outlet />
+        </div>
       </div>
     </div>
   );

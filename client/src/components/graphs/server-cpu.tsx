@@ -1,5 +1,5 @@
 import { useSocket } from "@/components/providers/socket-provider";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import {
   Card,
@@ -12,42 +12,44 @@ import { AreaChart, Area, ResponsiveContainer, Tooltip } from "recharts";
 
 const BUFFER_SIZE = 60;
 
-const ServerMemory = () => {
+const ServerCpu = () => {
   const { socket } = useSocket();
+  const [cpuUtilization, setCpuUtilization] = useState<any[]>([]);
+
+  const handleServerDispatch = useCallback((data: any) => {
+    setCpuUtilization((prev) => {
+      const newCpuUtilization = [
+        ...prev,
+        { time: data.SECONDS, cpu: data.CPU_USAGE },
+      ];
+      return newCpuUtilization.slice(-BUFFER_SIZE);
+    });
+  }, []);
+
+  const onServerDispatch = useMemo(
+    () => handleServerDispatch,
+    [handleServerDispatch]
+  );
 
   useEffect(() => {
-    socket?.on("server_dispatch", (data: any) => {
-      console.log(data);
-      setMemoryUtilization((prev) => {
-        const newMemoryUtilization = [
-          ...prev,
-          {
-            time: data.SECONDS,
-            memory: parseFloat(data.MEMORY_USAGE).toFixed(2),
-          },
-        ];
-        return newMemoryUtilization.slice(-BUFFER_SIZE);
-      });
-    });
-
+    socket?.on("server_dispatch", onServerDispatch);
     return () => {
       socket?.off("server_dispatch");
     };
   }, []);
 
-  const [memoryUtilization, setMemoryUtilization] = useState<any[]>([]);
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Memory Utilization</CardTitle>
+        <CardTitle>CPU Utilization</CardTitle>
         <CardDescription>
-          Graph describing memory utilization of server
+          Graph describing CPU utilization of server
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="w-full h-[250px]">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={memoryUtilization}>
+            <AreaChart data={cpuUtilization}>
               <defs>
                 <linearGradient id="colorgreen" x1="0" y1="0" x2="0" y2="1">
                   <stop
@@ -62,7 +64,7 @@ const ServerMemory = () => {
               <Area
                 type="monotone"
                 strokeWidth={2}
-                dataKey="memory"
+                dataKey="cpu"
                 fillOpacity={1}
                 fill="url(#colorgreen)"
               ></Area>
@@ -73,5 +75,4 @@ const ServerMemory = () => {
     </Card>
   );
 };
-
-export default ServerMemory;
+export default ServerCpu;

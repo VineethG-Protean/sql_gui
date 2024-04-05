@@ -28,7 +28,7 @@ const sheetMenuItems = [
       <MonitorDot className="h-4 w-4 group-hover:text-green-500 transition-all duration-500" />
     ),
     name: "Monitoring",
-    path: "/",
+    path: "/monitoring",
   },
   {
     icon: (
@@ -55,7 +55,7 @@ const sheetMenuItems = [
 
 const SideBar = () => {
   return (
-    <div className="hidden sm:flex flex-col items-center p-6 border-r border-muted h-full">
+    <div className="fixed top-16 hidden sm:flex flex-col items-center p-6 border-r border-muted h-full">
       <div className="flex flex-col gap-6 h-full">
         {sheetMenuItems.map((item, index) => (
           <NavLink
@@ -63,14 +63,12 @@ const SideBar = () => {
             className={({ isActive, isPending }) => {
               return isActive ? "text-primary" : "";
             }}
+            key={index}
           >
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger>
-                  <div
-                    key={index}
-                    className="cursor-pointer group hover:bg-muted p-2 transition-all duration-500 rounded-md"
-                  >
+                  <div className="cursor-pointer group hover:bg-muted p-2 transition-all duration-500 rounded-md">
                     {item.icon}
                   </div>
                 </TooltipTrigger>
