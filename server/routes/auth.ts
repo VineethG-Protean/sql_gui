@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { loginService } from "../services/authService";
+import { loginService } from "../services/auth-service";
 
 const AUTH = express();
 
@@ -7,8 +7,9 @@ AUTH.post("/login", async (req: Request, res: Response) => {
   await loginService(req, res);
 });
 
-AUTH.post("/register", async (req: Request, res: Response) => {});
+AUTH.get("/verify/:token", async (req: Request, res: Response) => {
 
-AUTH.post("/verify", async (req: Request, res: Response) => {});
+})
+
 
 export default AUTH;

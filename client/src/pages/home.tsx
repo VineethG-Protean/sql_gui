@@ -4,7 +4,7 @@ import ServerCpu from "@/components/graphs/server-cpu";
 
 const Home = () => {
   return (
-    <div className="p-6 flex gap-4 w-full">
+    <div className=" flex gap-4 w-full">
       <div className="w-2/3 flex flex-col gap-4">
         <ServerMemory />
         <ServerCpu />

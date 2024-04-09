@@ -1,13 +1,15 @@
 import { createPool } from "mysql2/promise";
 
-export async function connect() {
-  const connection = await createPool({
+const pool = () => {
+  const connection = createPool({
     host: "localhost",
     user: "root",
-    password: "admin",
-    database: "test",
+    password: "nafaz123",
+    database: "pep",
     connectionLimit: 10,
   });
 
   return connection;
 }
+
+export default pool;

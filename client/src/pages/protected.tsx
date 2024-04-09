@@ -4,8 +4,12 @@ import TopBar from "../components/topbar";
 import io from "socket.io-client";
 import { useSocket } from "@/components/providers/socket-provider";
 import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { getUserProfile } from "@/components/api/userApi";
+import { setUser } from "@/store/slices/userSlice";
 
 const Protected = () => {
+  const dispatch = useDispatch();
   const { socket, setSocket } = useSocket();
 
   const handleSocketConnection = () => {
@@ -13,20 +17,25 @@ const Protected = () => {
     setSocket(socket);
   };
 
-  useEffect(() => {
-    handleSocketConnection();
+  const handleUserProfile = async () => {
+    const response = await getUserProfile();
+    dispatch(setUser(response.data.DATA));
+  };
 
-    return () => {
-      socket?.disconnect();
-    };
+  useEffect(() => {
+    // handleSocketConnection();
+    handleUserProfile();
+    // return () => {
+    //   socket?.disconnect();
+    // };
   }, []);
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col h-full">
       <TopBar />
-      <div className="flex">
+      <div className="flex h-full">
         <SideBar />
-        <div className="ms-20 w-full">
+        <div className="ms-20 w-full p-6">
           <Outlet />
         </div>
       </div>

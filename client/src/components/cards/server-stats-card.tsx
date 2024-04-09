@@ -16,7 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { getDBServerStatusAPI } from "../api/dbServerApi";
+import { getServerStatsAPI } from "../api/serverApi";
 import { convertSeconds } from "@/lib/utils";
 import { Input } from "../ui/input";
 
@@ -32,7 +32,7 @@ const ServerStatsCard = () => {
   const [serverStats, setServerStats] = useState<ServerStatsInterface>();
 
   const handleDBServerStatus = async () => {
-    const response = await getDBServerStatusAPI();
+    const response = await getServerStatsAPI("1");
     setServerStats(response.data.DATA);
   };
 
@@ -77,14 +77,14 @@ const ServerStatsCard = () => {
                     <p className="text-muted-foreground text-xs font-bold">
                       BASE DIR
                     </p>
-                    <Input value={serverStats.BASE_DIR}/>
+                    <Input value={serverStats.BASE_DIR} />
                   </span>
 
                   <span className="flex flex-col gap-1">
                     <p className="text-muted-foreground text-xs font-bold">
                       DATA DIR
                     </p>
-                    <Input value={serverStats.BASE_DIR}/>
+                    <Input value={serverStats.BASE_DIR} />
                   </span>
                 </div>
               </div>

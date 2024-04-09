@@ -21,6 +21,7 @@ import {
   SquareKanban,
   User,
   MenuIcon,
+  Server,
 } from "lucide-react";
 import { LogOut } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -54,6 +55,13 @@ const sheetMenuItems = [
     ),
     name: "User Management",
     path: "/user",
+  },
+  {
+    icon: (
+      <Server className="h-4 w-4 group-hover:text-green-500 transition-all duration-500" />
+    ),
+    name: "Server Management",
+    path: "/server",
   },
   {
     icon: (

@@ -1,20 +1,26 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
+import { SocketProvider } from "./components/providers/socket-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 
 import AuthGuard from "./guard/auth";
 import Login from "./pages/login";
 import Home from "./pages/home";
 import Protected from "./pages/protected";
-import User from "./pages/user";
+import UserManagement from "./pages/user-management";
 import Settings from "./pages/settings";
 import Database from "./pages/database";
-import { SocketProvider } from "./components/providers/socket-provider";
+import Verify from "./pages/verify";
+import ServerManagement from "./pages/server-management";
 
 const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />,
+  },
+  {
+    path: "/verify/:token",
+    element: <Verify />,
   },
   {
     path: "/",
@@ -30,7 +36,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/user",
-        element: <AuthGuard children={<User />} />,
+        element: <AuthGuard children={<UserManagement />} />,
+      },
+      {
+        path: "/server",
+        element: <AuthGuard children={<ServerManagement />} />,
       },
       {
         path: "/settings",

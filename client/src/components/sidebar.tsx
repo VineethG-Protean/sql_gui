@@ -3,6 +3,7 @@ import { NavLink } from "react-router-dom";
 import {
   Database,
   MonitorDot,
+  Server,
   Settings,
   SquareKanban,
   User,
@@ -43,6 +44,13 @@ const sheetMenuItems = [
     ),
     name: "User Management",
     path: "/user",
+  },
+  {
+    icon: (
+      <Server className="h-4 w-4 group-hover:text-green-500 transition-all duration-500" />
+    ),
+    name: "Server Management",
+    path: "/server",
   },
   {
     icon: (
