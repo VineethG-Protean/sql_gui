@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import { SocketProvider } from "./components/providers/socket-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { Toaster } from "@/components/ui/toaster"
 
 import AuthGuard from "./guard/auth";
 import Login from "./pages/login";
@@ -55,6 +56,7 @@ function App() {
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <SocketProvider>
         <RouterProvider router={router} />
+        <Toaster />
       </SocketProvider>
     </ThemeProvider>
   );

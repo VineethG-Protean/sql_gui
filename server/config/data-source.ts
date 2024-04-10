@@ -6,7 +6,7 @@ export const mySqlSource = new DataSource({
     host: process.env.DB_HOST || 'localhost',
     port: parseInt(process.env.DB_HOST || '3306'),
     username: process.env.DB_USER || 'root',
-    password: process.env.DB_PASS || 'nafaz123',
+    password: process.env.DB_PASS || 'admin',
     database: process.env.DB_DBNAME || 'test',
     entities: ["entities/*.ts"],
     logging: true, //set true to see logs related to schema updates.

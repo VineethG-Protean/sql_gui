@@ -17,6 +17,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Server } from "lucide-react";
 import { addServerAPI } from "../api/adminApi";
@@ -31,8 +38,10 @@ const AddServerDialog: React.FC<AddServerDialogProps> = ({
   setDialogState,
 }) => {
   const formSchema = z.object({
+    name: z.string().max(50).trim(),
+    protocol: z.string().trim(),
     host: z.string().min(2).max(50).trim(),
-    port: z.string(),
+    port: z.string().trim(),
     username: z.string().min(4).max(50).trim(),
     password: z.string().min(4).max(50).trim(),
     type: z.string().trim(),
@@ -41,6 +50,8 @@ const AddServerDialog: React.FC<AddServerDialogProps> = ({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      name: "",
+      protocol: "",
       host: "",
       port: "",
       username: "",
@@ -51,6 +62,7 @@ const AddServerDialog: React.FC<AddServerDialogProps> = ({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     await addServerAPI(values);
+    setDialogState();
   };
 
   return (
@@ -65,6 +77,43 @@ const AddServerDialog: React.FC<AddServerDialogProps> = ({
                   onSubmit={form.handleSubmit(onSubmit)}
                   className="flex flex-col gap-3 mt-4"
                 >
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input placeholder="Name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="protocol"
+                    render={({ field }) => (
+                      <FormItem>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Protocol" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="http">http</SelectItem>
+                            <SelectItem value="m@google.com">https</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
                   <FormField
                     control={form.control}
                     name="host"
@@ -126,9 +175,19 @@ const AddServerDialog: React.FC<AddServerDialogProps> = ({
                     name="type"
                     render={({ field }) => (
                       <FormItem>
-                        <FormControl>
-                          <Input placeholder="Type" {...field} />
-                        </FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Type" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="mysql">MySQL</SelectItem>
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}

@@ -1,6 +1,8 @@
-import { Button } from "@/components/ui/button";
-import { Info, Lock, Pen, PlusCircle, Trash } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -17,16 +19,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Info, Lock, Pen, PlusCircle, Trash } from "lucide-react";
+
 import CreateUserDialog from "@/components/dialogs/create-user-dialog";
-import { useEffect, useState } from "react";
-import { getAllUsersAPI } from "@/components/api/adminApi";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
+import { deleteUserAPI, getAllUsersAPI } from "@/components/api/adminApi";
+import { Users } from "@/lib/interfaces";
+import { useToast } from "@/components/ui/use-toast";
 
 const UserManagement = () => {
   const user = useSelector((state: RootState) => state.user);
+  const { toast } = useToast();
 
-  const [users, setUser] = useState<any[]>([]);
+  const [users, setUser] = useState<Users[]>([]);
   const [authorized, setAuthorized] = useState<boolean>(false);
   const [createUserDialogState, setCreateUserDialogState] =
     useState<boolean>(false);
@@ -34,6 +38,15 @@ const UserManagement = () => {
   const handleFetchUsers = async () => {
     const response = await getAllUsersAPI();
     setUser(response.data.DATA);
+  };
+
+  const handleDeleteUsers = async (id: number) => {
+    const response = await deleteUserAPI(id);
+    if (response.status == 201)
+      toast({
+        title: "User Action",
+        description: "User has been removed successfully",
+      });
   };
 
   useEffect(() => {
@@ -91,13 +104,21 @@ const UserManagement = () => {
                       <TableCell>{user.role}</TableCell>
                       <TableCell className="flex gap-4 items-center">
                         <Pen className="h-4 w-4 cursor-pointer hover:text-primary transition-colors" />
-                        <Trash className="h-4 w-4 cursor-pointer hover:text-primary transition-colors" />
+                        <Trash
+                          onClick={() => handleDeleteUsers(user.id)}
+                          className="h-4 w-4 cursor-pointer hover:text-primary transition-colors"
+                        />
                         <Info className="h-4 w-4 cursor-pointer hover:text-primary transition-colors" />
                       </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
+              {users.length == 0 && (
+                <div className="p-5 text-center text-xl text-muted-foreground font-semibold w-full">
+                  No Servers Found
+                </div>
+              )}
             </CardContent>
           </Card>
         </>

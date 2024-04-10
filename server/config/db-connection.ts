@@ -4,8 +4,8 @@ const pool = () => {
   const connection = createPool({
     host: "localhost",
     user: "root",
-    password: "nafaz123",
-    database: "pep",
+    password: "admin",
+    database: "test",
     connectionLimit: 10,
   });
 

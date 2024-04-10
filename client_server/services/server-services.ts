@@ -35,10 +35,10 @@ export const mySqlServerStats = async (req: Request, res: Response) => {
     );
 
     const DATA_DIR = await executeUnsafeCommands(
-        'mysql --user=root --password=nafaz123 --execute="SELECT @@datadir;"'
+        'mysql --user=root --password=admin --execute="SELECT @@datadir;"'
     );
     const BASE_DIR = await executeUnsafeCommands(
-        'mysql --user=root --password=nafaz123 --execute="SELECT @@basedir;"'
+        'mysql --user=root --password=admin --execute="SELECT @@basedir;"'
     );
 
     return res.status(200).json(
