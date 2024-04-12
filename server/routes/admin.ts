@@ -10,6 +10,7 @@ import {
   getAllUsers,
   inviteUser,
   updateServer,
+  updateUser,
 } from "../services/admin-service";
 
 const ADMIN = express();
@@ -24,7 +25,9 @@ ADMIN.post("/user/invite", async (req: Request, res: Response) => {
   await inviteUser(req, res);
 });
 
-ADMIN.put("/user", async (req: Request, res: Response) => {});
+ADMIN.put("/user", async (req: Request, res: Response) => {
+  await updateUser(req, res);
+});
 
 ADMIN.delete("/user/:id", async (req: Request, res: Response) => {
   await deleteUser(req, res);

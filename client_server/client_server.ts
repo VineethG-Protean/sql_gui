@@ -3,12 +3,14 @@ import cors from "cors";
 import morgan from "morgan";
 import http from "http";
 import { Server } from "socket.io";
+import dotenv from "dotenv";
+dotenv.config();
 
 import { serverUtilization } from "./services/server-services";
 import SERVER from "./routes/server";
 
 const app: Express = express();
-const port = 3001;
+const port = process.env.SERVER_PORT;
 const server = http.createServer(app);
 
 const io = new Server(server, {
@@ -22,6 +24,7 @@ app.use(express.json());
 app.use(morgan("dev"));
 
 io.on("connection", (socket) => {
+  console.log("Client disconnected");
   const cpuInterval = setInterval(async () => {
     const serverStats = await serverUtilization();
     io.emit("server_dispatch", serverStats);

@@ -6,6 +6,7 @@ import { encryptPassword } from "../utilities/encryption";
 
 import { Server } from "../entities/Server";
 import { User } from "../entities/User";
+import moment from "moment";
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
@@ -14,15 +15,22 @@ export const getAllUsers = async (req: Request, res: Response) => {
       .createQueryBuilder("user")
       .select([
         "user.id",
+        "user.email",
+        "user.username",
+        "user.name",
+        "user.role",
+        "user.is_verified",
+        "user.is_active",
         "user.created_at",
         "user.modified_at",
-        "user.role",
-        "user.name",
-        "user.username",
       ])
       .getMany();
-    if (!users) return res.status(404).json(RESPONSE.NOT_FOUND());
-    return res.status(200).json(RESPONSE.OK("DATA RETURNED", users));
+
+    if (!users) {
+      return res.status(404).json(RESPONSE.NOT_FOUND());
+    } else {
+      return res.status(200).json(RESPONSE.OK("DATA RETURNED", users));
+    }
   } catch (error) {
     return res.status(500).json(RESPONSE.INTERNAL_SERVER_ERROR());
   }
@@ -42,7 +50,8 @@ export const inviteUser = async (req: Request, res: Response) => {
       user.name = name;
       user.is_verified = true;
       user.is_active = true;
-      const savedUser = await mySqlSource.getRepository(User).save(user);
+
+      const result = await mySqlSource.getRepository(User).save(user);
       return res.status(201).json(RESPONSE.CREATED("INVITATION HAS BEEN SENT"));
     } else {
       res.status(422).json(RESPONSE.CONFLICT("EMAIL ALREADY IN USE"));
@@ -52,20 +61,65 @@ export const inviteUser = async (req: Request, res: Response) => {
   }
 };
 
-export const updateUser = async (req: Request, res: Response) => {};
+export const updateUser = async (req: Request, res: Response) => {
+  const { id, name, email, username, role, is_verified, is_active } = req.body;
+  if (
+    !id ||
+    !name ||
+    !email ||
+    !username ||
+    !role ||
+    !is_verified ||
+    !is_active
+  )
+    return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
+  try {
+    const user = new User();
+    user.name = name;
+    user.email = email;
+    user.username = username;
+    user.role = role;
+    user.is_verified = is_verified;
+    user.is_active = is_active;
+    user.modified_at = moment().format("YYYY-MM-DD HH:mm:ss");
+
+    const result = await mySqlSource
+      .createQueryBuilder()
+      .update(User)
+      .set(user)
+      .where("id= :id", { id })
+      .execute();
+
+    if (result.affected && result.affected > 0) {
+      return res.status(204).json(RESPONSE.NO_CONTENT());
+    } else {
+      return res
+        .status(404)
+        .json(RESPONSE.NOT_FOUND(`USER WITH ID ${id} WAS NOT FOUND`));
+    }
+  } catch (error) {
+    return res.status(500).json(RESPONSE.INTERNAL_SERVER_ERROR());
+  }
+};
 
 export const deleteUser = async (req: Request, res: Response) => {
   const id = req.params.id;
   if (!id) return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
   try {
-    const deletedUser = await mySqlSource
+    const result = await mySqlSource
       .getRepository(User)
       .createQueryBuilder()
       .delete()
       .where("id= :id", { id })
       .execute();
 
-    return res.status(201).json(RESPONSE.CREATED());
+    if (result.affected && result.affected > 0) {
+      return res.status(204).json(RESPONSE.NO_CONTENT());
+    } else {
+      return res
+        .status(404)
+        .json(RESPONSE.NOT_FOUND(`SERVER WITH ${id} WAS NOT FOUND`));
+    }
   } catch (error) {
     return res.status(500).json(RESPONSE.INTERNAL_SERVER_ERROR());
   }
@@ -93,26 +147,34 @@ export const addServer = async (req: Request, res: Response) => {
 };
 
 export const updateServer = async (req: Request, res: Response) => {
-  const { id, host, port, username, password, type } = req.body;
-  if (!id || !host || !port || !username || !password || !type)
+  const { id, name, protocol, host, port, username, password, type } = req.body;
+  if (!id || !protocol || !host || !port || !username || !password || !type)
     return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
   try {
     const server = new Server();
     server.id = id;
+    server.name = name;
+    server.protocol = protocol;
     server.host = host;
     server.port = port;
     server.username = username;
     server.password = password;
     server.type = type;
+    server.modified_at = moment().format("YYYY-MM-DD HH:mm:ss");
 
-    const updateServer = await mySqlSource
+    const result = await mySqlSource
       .createQueryBuilder()
       .update(Server)
       .set(server)
-      .where("id", { id })
+      .where("id= :id", { id })
       .execute();
-
-    return res.status(201).json(RESPONSE.CREATED());
+    if (result.affected && result.affected > 0) {
+      return res.status(204).json(RESPONSE.NO_CONTENT());
+    } else {
+      return res
+        .status(404)
+        .json(RESPONSE.NOT_FOUND(`SERVER WITH ID ${id} WAS NOT FOUND`));
+    }
   } catch (error) {
     return res.status(500).json(RESPONSE.INTERNAL_SERVER_ERROR());
   }
@@ -122,14 +184,20 @@ export const deleteServer = async (req: Request, res: Response) => {
   const id = req.params.id;
   if (!id) return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
   try {
-    const deletedServer = await mySqlSource
+    const result = await mySqlSource
       .getRepository(Server)
       .createQueryBuilder()
       .delete()
       .where("id= :id", { id })
       .execute();
 
-    return res.status(201).json(RESPONSE.CREATED());
+    if (result.affected && result.affected > 0) {
+      return res.status(204).json(RESPONSE.NO_CONTENT());
+    } else {
+      return res
+        .status(404)
+        .json(RESPONSE.NOT_FOUND(`SERVER WITH ID ${id} WAS NOT FOUND`));
+    }
   } catch (error) {
     return res.status(500).json(RESPONSE.INTERNAL_SERVER_ERROR());
   }

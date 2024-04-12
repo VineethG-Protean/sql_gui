@@ -27,16 +27,21 @@ import {
 import { Input } from "@/components/ui/input";
 import { Server } from "lucide-react";
 import { addServerAPI } from "../api/adminApi";
+import { useToast } from "../ui/use-toast";
 
 interface AddServerDialogProps {
   dialogState: boolean;
   setDialogState: () => void;
+  fetchServers: () => void;
 }
 
 const AddServerDialog: React.FC<AddServerDialogProps> = ({
   dialogState,
   setDialogState,
+  fetchServers,
 }) => {
+  const { toast } = useToast();
+
   const formSchema = z.object({
     name: z.string().max(50).trim(),
     protocol: z.string().trim(),
@@ -61,8 +66,21 @@ const AddServerDialog: React.FC<AddServerDialogProps> = ({
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    await addServerAPI(values);
-    setDialogState();
+    try {
+      await addServerAPI(values);
+      setDialogState();
+      toast({
+        title: "Server Action",
+        description: "Server has been added successfully",
+      });
+      fetchServers();
+    } catch (error) {
+      toast({
+        title: "Server Action",
+        description: "Something went wrong",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -70,7 +88,7 @@ const AddServerDialog: React.FC<AddServerDialogProps> = ({
       <Dialog open={dialogState} onOpenChange={setDialogState}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Create a new user</DialogTitle>
+            <DialogTitle>Add a new server</DialogTitle>
             <DialogDescription>
               <Form {...form}>
                 <form
@@ -83,7 +101,7 @@ const AddServerDialog: React.FC<AddServerDialogProps> = ({
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <Input placeholder="Name" {...field} />
+                          <Input placeholder="Server name" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -101,12 +119,12 @@ const AddServerDialog: React.FC<AddServerDialogProps> = ({
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Protocol" />
+                              <SelectValue placeholder="Server protocol" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
                             <SelectItem value="http">http</SelectItem>
-                            <SelectItem value="m@google.com">https</SelectItem>
+                            <SelectItem value="https">https</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -120,7 +138,7 @@ const AddServerDialog: React.FC<AddServerDialogProps> = ({
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <Input placeholder="Host" {...field} />
+                          <Input placeholder="Host address" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -181,7 +199,7 @@ const AddServerDialog: React.FC<AddServerDialogProps> = ({
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Type" />
+                              <SelectValue placeholder="Server Type" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>

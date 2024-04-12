@@ -1,10 +1,9 @@
-import moment from "moment";
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  OneToOne,
-  OneToMany,
+  BeforeInsert,
+  BeforeUpdate,
 } from "typeorm";
 
 @Entity()
@@ -36,14 +35,14 @@ export class Server {
   @Column({
     type: "datetime",
     nullable: false,
-    default: moment().format("YYYY-MM-DD HH:mm:ss"),
+    default: () => "CURRENT_TIMESTAMP",
   })
-  created_at!: Date;
+  created_at!: string;
 
   @Column({
     type: "datetime",
     nullable: false,
-    default: moment().format("YYYY-MM-DD HH:mm:ss"),
+    default: () => "CURRENT_TIMESTAMP",
   })
-  modified_at!: Date;
+  modified_at!: string;
 }

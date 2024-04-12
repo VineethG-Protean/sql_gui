@@ -21,16 +21,21 @@ import { Input } from "@/components/ui/input";
 import { MailPlus } from "lucide-react";
 import { ChangeEvent } from "react";
 import { inviteUserAPI } from "../api/adminApi";
+import { useToast } from "../ui/use-toast";
 
 interface CreateUserDialogProps {
   dialogState: boolean;
   setDialogState: () => void;
+  fetchUsers: () => void;
 }
 
 const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
   dialogState,
   setDialogState,
+  fetchUsers,
 }) => {
+  const { toast } = useToast();
+
   const formSchema = z.object({
     email: z.string().min(2).max(50).trim(),
     username: z.string().min(4).max(50).trim(),
@@ -54,7 +59,20 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
   };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    await inviteUserAPI(values);
+    try {
+      await inviteUserAPI(values);
+      setDialogState();
+      toast({
+        title: "User Action",
+        description: "User has been invited successfully",
+      });
+      fetchUsers();
+    } catch (error) {
+      toast({
+        title: "User Action",
+        description: "Something went wrong",
+      });
+    }
   };
 
   return (

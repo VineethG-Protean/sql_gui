@@ -13,9 +13,12 @@ export interface Servers {
 
 export interface Users {
   id: number;
+  email: string;
   username: string;
   name: string;
   role: string;
+  is_verified: boolean;
+  is_active: boolean;
   created_at: string;
   modified_at: string;
 }

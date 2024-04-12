@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-
+import { AxiosError } from "axios";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -14,9 +14,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { loginAPI, setToken } from "@/components/api/authApi";
+import { useToast } from "@/components/ui/use-toast";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const formSchema = z.object({
     username: z.string().min(2).max(50).trim(),
@@ -32,10 +34,22 @@ const Login = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    const response = await loginAPI(values);
-    if (response.status === 200) {
-      setToken(response.data.DATA);
-      navigate("/");
+    try {
+      const response = await loginAPI(values);
+      if (response.status === 200) {
+        setToken(response.data.DATA);
+        toast({
+          title: "Authentication",
+          description: "Login successful",
+        });
+        navigate("/");
+      }
+    } catch (error: any) {
+      toast({
+        title: "Authentication",
+        description: error.response?.data.MESSAGE,
+        variant: "destructive",
+      });
     }
   };
 

@@ -13,7 +13,6 @@ const tokenValidator = async (req: Request, res: Response, next: NextFunction) =
     const origin = req.get("origin");
     // if (origin && allowedOrigins.includes(origin)) {
     var token = req.headers["x-access-token"];
-    console.log(token);
     if (!token)
         res.status(401).json(RESPONSE.UN_AUTHORIZED())
 

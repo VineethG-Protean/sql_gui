@@ -2,6 +2,8 @@ import express, { Express, Request, Response } from "express";
 import cors from "cors";
 import morgan from "morgan";
 import http from "http";
+import dotenv from "dotenv";
+dotenv.config();
 
 import AUTH from "./routes/auth";
 import ADMIN from "./routes/admin";
@@ -13,7 +15,7 @@ import { User } from "./entities/User";
 import { encryptPassword } from "./utilities/encryption";
 
 const app: Express = express();
-const port = 3000;
+const port = process.env.SERVER_PORT;
 const server = http.createServer(app);
 
 app.use(cors());

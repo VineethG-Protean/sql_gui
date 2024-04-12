@@ -10,17 +10,24 @@ export const RESPONSE = {
   CREATED: (message?: string | string[], data?: any | any[]) => {
     return {
       ERROR: false,
-      STATUS: 200,
+      STATUS: 201,
       MESSAGE: message ? message : "CREATED",
       DATA: data ? data : [],
+    };
+  },
+  NO_CONTENT: (message?: string | string[]) => {
+    return {
+      ERROR: false,
+      STATUS: 204,
+      MESSAGE: message ? message : "NO CONTENT",
     };
   },
   UN_AUTHORIZED: (message?: string | string[]) => {
     return {
       ERROR: true,
       STATUS: 401,
-      MESSAGE: message ? message : 'UN AUTHORIZED'
-    }
+      MESSAGE: message ? message : "UN AUTHORIZED",
+    };
   },
   NOT_FOUND: (message?: string | string[]) => {
     return {
