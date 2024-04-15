@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+
 import { RootState } from "@/store/store";
+import { setActiveServer } from "@/store/slices/activeServerSlice";
 
 import { Lock } from "lucide-react";
 import {
@@ -12,22 +14,19 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { getAllServersAPI } from "@/components/api/userApi";
 import DatabaseTab from "@/components/tabs/databases-tab";
 import TablesTab from "@/components/tabs/tables-tab";
+import UsersTab from "@/components/tabs/users-tab";
 
 const Database = () => {
   const user = useSelector((state: RootState) => state.user);
+  const servers = useSelector((state: RootState) => state.servers);
+  const activeServer = useSelector((state: RootState) => state.activeServer);
+
+  const dispatch = useDispatch();
+
   const [authorized, setAuthorized] = useState<boolean>(true);
-  const [servers, setServers] = useState<any[]>([]);
-  const [tab, setTab] = useState<string>("databases");
-
-  const handleFetchServers = async () => {
-    const response = await getAllServersAPI();
-    setServers(response.data.DATA);
-  };
-
-  const handleFetchDatabases = () => {};
+  const [tab, setTab] = useState<string>("users");
 
   useEffect(() => {
     const checkAuthorization = async () => {
@@ -37,7 +36,6 @@ const Database = () => {
         user.role == "database_admin"
       ) {
         setAuthorized(true);
-        handleFetchServers();
       } else {
         setAuthorized(false);
       }
@@ -45,32 +43,40 @@ const Database = () => {
 
     checkAuthorization();
   }, [user]);
-
+  
   return (
     <>
       {authorized ? (
         <>
           <div className="w-full flex justify-between items-center">
             <Tabs
-              defaultValue="databases"
+              defaultValue="users"
               className="w-[400px]"
               onValueChange={(e) => {
                 setTab(e);
               }}
             >
               <TabsList>
+                <TabsTrigger value="users">Users</TabsTrigger>
                 <TabsTrigger value="databases">Databases</TabsTrigger>
                 <TabsTrigger value="tables">Tables</TabsTrigger>
               </TabsList>
             </Tabs>
-
-            <Select>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Servers" />
+            <Select
+              defaultValue={activeServer.id.toString()}
+              onValueChange={(e) => {
+                const server = servers.find(
+                  (server, _) => server.id.toString() === e
+                );
+                if (server) dispatch(setActiveServer(server));
+              }}
+            >
+              <SelectTrigger className="w-[250px]">
+                <SelectValue placeholder="Please select a server" />
               </SelectTrigger>
               <SelectContent>
                 {servers.map((server, index) => (
-                  <SelectItem key={index} value={server.id}>
+                  <SelectItem key={index} value={server.id.toString()}>
                     {server.name}
                   </SelectItem>
                 ))}
@@ -81,7 +87,10 @@ const Database = () => {
             </Select>
           </div>
 
-          <Tabs defaultValue={tab} value={tab}>
+          <Tabs defaultValue={tab} value={tab} className="mt-4">
+            <TabsContent value="users">
+              <UsersTab />
+            </TabsContent>
             <TabsContent value="databases">
               <DatabaseTab />
             </TabsContent>

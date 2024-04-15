@@ -16,3 +16,11 @@ export const getServerStatsAPI = (id: string): Promise<AxiosResponse> => {
     },
   });
 };
+
+export const getMysqlUsersAPI = (id: number): Promise<AxiosResponse> => {
+  return axios.get(`http://localhost:3000/api/global/${id}/users`, {
+    headers: {
+      "x-access-token": getToken().toString(),
+    },
+  });
+};

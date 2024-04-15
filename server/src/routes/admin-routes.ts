@@ -11,7 +11,7 @@ import {
   inviteUser,
   updateServer,
   updateUser,
-} from "../services/admin-service";
+} from "../services/admin-services";
 
 const ADMIN = express();
 ADMIN.use(tokenValidator);

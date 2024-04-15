@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import axios, { AxiosResponse } from "axios";
 
-import { RESPONSE } from "../utilities/response";
-import { mySqlSource } from "../config/data-source";
+import { RESPONSE } from "../../utilities/response";
+import { mySqlSource } from "../../config/data-source";
 
-import { Server } from "../entities/Server";
+import { Server } from "../../entities/Server";
 
 export const connectServer = async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
@@ -35,24 +35,14 @@ export const getStats = async (req: Request, res: Response) => {
       `${server?.protocol}://${server?.host}:${server?.port}/stats`
     );
     if (response.status === 200) {
-      return res.status(200).json(RESPONSE.OK("SERVER RESPONDED WITH 200",response.data.DATA));
+      return res
+        .status(200)
+        .json(RESPONSE.OK("SERVER RESPONDED WITH 200", response.data.DATA));
     } else {
       return res
         .status(500)
         .json(RESPONSE.INTERNAL_SERVER_ERROR("SERVER RESPONDED WITH 500"));
     }
-  } catch (error) {
-    return res.status(500).json(RESPONSE.INTERNAL_SERVER_ERROR());
-  }
-};
-
-export const executeQuery = async (req: Request, res: Response) => {
-  const { id, query } = req.body;
-  try {
-    const server = await mySqlSource.getRepository(Server).findOneBy({ id });
-    /*
-      INTERACT WITH THE CLIENT SERVER END POINT AND EXECUTE QUERY
-    */
   } catch (error) {
     return res.status(500).json(RESPONSE.INTERNAL_SERVER_ERROR());
   }

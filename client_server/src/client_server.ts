@@ -40,9 +40,9 @@ io.on("connection", (socket) => {
 });
 
 app.use("/server", SERVER);
-app.use("/mysql/global", GLOBAL);
-app.use("/mysql/database", DATABASE);
-app.use("/mysql/table", TABLE);
+app.use("/global", GLOBAL);
+app.use("/database", DATABASE);
+app.use("/table", TABLE);
 
 server.listen(port, () =>
   console.log(`⚡ | Server is running at http://localhost:${port}`)

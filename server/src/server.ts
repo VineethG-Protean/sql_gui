@@ -5,10 +5,11 @@ import http from "http";
 import dotenv from "dotenv";
 dotenv.config();
 
-import AUTH from "./routes/auth";
-import ADMIN from "./routes/admin";
-import SERVER from "./routes/server";
-import USER from "./routes/user";
+import AUTH from "./routes/auth-routes";
+import ADMIN from "./routes/admin-routes";
+import USER from "./routes/user-routes";
+import STATS from "./routes/mysql/stats-routes";
+import GLOBAL from "./routes/mysql/global-routes";
 
 import { mySqlSource } from "./config/data-source";
 import { User } from "./entities/User";
@@ -33,8 +34,9 @@ mySqlSource
 
 app.use("/api/auth", AUTH);
 app.use("/api/admin", ADMIN);
-app.use("/api/server", SERVER);
 app.use("/api/user", USER);
+app.use("/api/stats", STATS);
+app.use("/api/global", GLOBAL);
 
 app.get("/test", async (req: Request, res: Response) => {
   const encryptedPassword = await encryptPassword("admin");

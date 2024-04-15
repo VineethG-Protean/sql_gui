@@ -3,24 +3,31 @@ import { useDispatch } from "react-redux";
 import { Outlet, useLocation } from "react-router-dom";
 
 import { setUser } from "@/store/slices/userSlice";
-import { getUserProfile } from "@/components/api/userApi";
+import { getAllServersAPI, getUserProfile } from "@/components/api/userApi";
 
 import SideBar from "../components/sidebar";
 import TopBar from "../components/topbar";
 import { useSocket } from "@/components/providers/socket-provider";
+import { setServers } from "@/store/slices/serversSlice";
 
 const Protected = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const { socket } = useSocket();
 
-  const handleUserProfile = async () => {
+  const handleFetchUserProfile = async () => {
     const response = await getUserProfile();
     dispatch(setUser(response.data.DATA));
   };
 
+  const handleFetchServers = async () => {
+    const response = await getAllServersAPI();
+    dispatch(setServers(response.data.DATA));
+  };
+
   useEffect(() => {
-    handleUserProfile();
+    handleFetchUserProfile();
+    handleFetchServers();
   }, []);
 
   useEffect(() => {
