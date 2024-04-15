@@ -199,11 +199,11 @@ const UserManagement = () => {
                                 <User className="h-10 w-10" />
                               </div>
                               <div className="w-full">
-                                <div className="flex gap-2 mb-1 items-center">
+                                <div className="mb-1 flex justify-between items-center">
                                   <p className="font-semibold text-lg">
                                     {user.name}
                                   </p>
-                                  <p className="flex justify-center items-center text-muted-foreground capitalize border border-muted text-[12px] rounded-md px-3 py-0.5">
+                                  <p className="flex justify-center items-center text-muted-foreground border border-muted text-[12px] rounded-md px-3 py-0.5">
                                     {user.role}
                                   </p>
                                 </div>

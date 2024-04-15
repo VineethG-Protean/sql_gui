@@ -8,6 +8,9 @@ dotenv.config();
 
 import { serverUtilization } from "./services/server-services";
 import SERVER from "./routes/server";
+import GLOBAL from "./routes/mysql-global";
+import DATABASE from "./routes/mysql-database";
+import TABLE from "./routes/mysl-table";
 
 const app: Express = express();
 const port = process.env.SERVER_PORT;
@@ -36,7 +39,10 @@ io.on("connection", (socket) => {
   });
 });
 
-app.use("/", SERVER);
+app.use("/server", SERVER);
+app.use("/mysql/global", GLOBAL);
+app.use("/mysql/database", DATABASE);
+app.use("/mysql/table", TABLE);
 
 server.listen(port, () =>
   console.log(`⚡ | Server is running at http://localhost:${port}`)

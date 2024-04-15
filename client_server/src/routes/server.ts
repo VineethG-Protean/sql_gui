@@ -1,8 +1,6 @@
 import express, { Request, Response } from "express";
 import {
-  createMysqlUser,
-  getMysqlUsers,
-  getServerStats,
+  mySqlServerStats
 } from "../services/server-services";
 
 const SERVER = express();
@@ -12,14 +10,7 @@ SERVER.get("/connect", async (req: Request, res: Response) => {
 });
 
 SERVER.get("/stats", async (req: Request, res: Response) => {
-  await getServerStats(req, res);
+  await mySqlServerStats(req, res);
 });
 
-SERVER.get("/users", async (req: Request, res: Response) => {
-  await getMysqlUsers(req, res);
-});
-
-SERVER.post("/users/create", async (req: Request, res: Response) => {
-  await createMysqlUser(req, res);
-});
 export default SERVER;

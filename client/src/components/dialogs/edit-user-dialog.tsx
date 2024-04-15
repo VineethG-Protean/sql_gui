@@ -169,8 +169,14 @@ const EditUserDialog: React.FC<EditUserProps> = ({
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="admin">Admin</SelectItem>
-                            <SelectItem value="user">User</SelectItem>
+                            <SelectItem value="server_admin">
+                              Server Admin
+                            </SelectItem>
+                            <SelectItem value="database_admin">
+                              Database Admin
+                            </SelectItem>
+                            <SelectItem value="user_l1">User L1</SelectItem>
+                            <SelectItem value="user_l2">User L2</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />

@@ -10,9 +10,9 @@ export const mySqlSource = new DataSource({
   username: process.env.DB_USER,
   password: process.env.DB_PASS,
   database: process.env.DB_DBNAME,
-  entities: ["entities/*.ts"],
+  entities: ["src/entities/*.ts"],
   logging: false, //set true to see logs related to schema updates.
-  synchronize: false, //set false to avoid schema sync between server and database.
+  synchronize: true, //set false to avoid schema sync between server and database.
   extra: {
     connectionLimit: 1000,
     charset: "utf8mb4",

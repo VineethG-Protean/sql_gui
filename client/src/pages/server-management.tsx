@@ -204,7 +204,7 @@ const ServerManagement = () => {
                               </div>
 
                               <div className="w-full">
-                                <div className="flex gap-2 mb-1 items-center">
+                                <div className="mb-1 flex justify-between items-center">
                                   <p className="font-semibold text-lg">
                                     {server.name}
                                   </p>

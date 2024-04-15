@@ -5,7 +5,7 @@ interface UserInterface {
     email: string
     username: string,
     name: string,
-    role: string,
+    role: "admin" | "server_admin" | "database_admin" | "user_l1" | "user_l2",
 }
 
 const initialState: UserInterface = {
@@ -13,7 +13,7 @@ const initialState: UserInterface = {
     email: "",
     username: "",
     name: "",
-    role: ""
+    role: "user_l2"
 };
 
 export const userSlice = createSlice({

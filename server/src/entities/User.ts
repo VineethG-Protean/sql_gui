@@ -24,8 +24,8 @@ export class User {
   @Column({ type: "varchar", nullable: true, length: 20 })
   name!: string;
 
-  @Column({ type: "varchar", nullable: true, default: "user" })
-  role!: "admin" | "user" | "moderator";
+  @Column({ type: "varchar", nullable: true, default: "user_l2" })
+  role!: "admin" | "server_admin" | "database_admin" | "user_l1" | "user_l2";
 
   @Column({ type: "boolean", nullable: true })
   is_verified!: boolean;
