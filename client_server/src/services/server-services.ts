@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 import os from "os";
-import pool from "../config/db-connection";
+import { pool } from "../config/db-connection";
 import { executeUnsafeCommands } from "../utilities/execute-commands";
 import { Request, Response } from "express";
 import { RESPONSE } from "../utilities/response";

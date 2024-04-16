@@ -7,10 +7,9 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import { serverUtilization } from "./services/server-services";
-import SERVER from "./routes/server";
-import GLOBAL from "./routes/mysql-global";
-import DATABASE from "./routes/mysql-database";
-import TABLE from "./routes/mysl-table";
+import USER from "./routes/root-user-routes/mysql-user-routes";
+import DB from "./routes/root-user-routes/mysql-database-routes";
+import TABLE from "./routes/root-user-routes/mysql-tables-routes";
 
 const app: Express = express();
 const port = process.env.SERVER_PORT;
@@ -39,10 +38,9 @@ io.on("connection", (socket) => {
   });
 });
 
-app.use("/server", SERVER);
-app.use("/global", GLOBAL);
-app.use("/database", DATABASE);
-app.use("/table", TABLE);
+app.use("/root/user", USER);
+app.use("/root/database", DB);
+app.use("/root/table", TABLE);
 
 server.listen(port, () =>
   console.log(`⚡ | Server is running at http://localhost:${port}`)

@@ -14,8 +14,11 @@ GLOBAL.post("/user", async (req: Request, res: Response) => {
   await clientServer_POST(req, res, "/global/user");
 });
 
-GLOBAL.delete("/user", async (req: Request, res: Response) => {});
+GLOBAL.delete("/user", async (req: Request, res: Response) => {
+});
 
-GLOBAL.get("/databases", async (req: Request, res: Response) => {});
+GLOBAL.get("/:id/databases", async (req: Request, res: Response) => {
+  await clientServer_GET(req,res,"/global/databases")
+});
 
 export default GLOBAL;

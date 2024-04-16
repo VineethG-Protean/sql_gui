@@ -1,9 +1,9 @@
 export interface Servers {
-  id: number;
+  id: string;
   name: string;
   protocol: string;
   host: string;
-  port: number;
+  port: string;
   username: string;
   password: string;
   type: string;

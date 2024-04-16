@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { alterTableData, alterTableSchema, createTable, deleteTableData, dropTable, getAllTables, getTableData, getTableSchema } from "../services/mysql-table-services";
+import { alterTableData, alterTableSchema, createTable, deleteTableData, dropTable, getAllTables, getTableData, getTableSchema } from "../../services/root-services/table-services";
 
 const TABLE = express();
 

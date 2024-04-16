@@ -2,11 +2,11 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Servers } from "@/lib/interfaces";
 
 const initialState: Servers = {
-  id: 0,
+  id: "",
   name: "",
   protocol: "",
   host: "",
-  port: 0,
+  port: "",
   username: "",
   password: "",
   type: "",
@@ -28,5 +28,6 @@ export const activeServerSlice = createSlice({
   },
 });
 
-export const { setActiveServer, getActiveServer, resetActiveServer } = activeServerSlice.actions;
+export const { setActiveServer, getActiveServer, resetActiveServer } =
+  activeServerSlice.actions;
 export default activeServerSlice.reducer;

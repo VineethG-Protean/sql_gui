@@ -30,32 +30,35 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { connectToServerAPI, getServerStatsAPI } from "../api/serverApi";
 import { convertSeconds } from "@/lib/utils";
 import { Input } from "../ui/input";
-import { getAllServersAPI } from "../api/userApi";
 import { ServerStats } from "@/lib/interfaces";
 import { Button } from "../ui/button";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import { setActiveServer } from "@/store/slices/activeServerSlice";
 
 const ServerStatsCard = () => {
   const { toast } = useToast();
+  const servers = useSelector((state: RootState) => state.servers);
+  const activeServer = useSelector((state: RootState) => state.activeServer);
+  const dispatch = useDispatch();
   const { socket, setSocket } = useSocket();
   const [loading, setLoading] = useState<boolean>(false);
-  const [servers, setServers] = useState<any[]>([]);
   const [serverStats, setServerStats] = useState<ServerStats>();
 
-  const handleFetchServers = async () => {
-    const response = await getAllServersAPI();
-    setServers(response.data.DATA);
-  };
+  const handleSelectServer = async (server_id: any) => {
+    const response = await connectToServerAPI(server_id);
+    const resServer = servers.find((server, _) => server.id === server_id);
+    if (resServer) dispatch(setActiveServer(resServer));
 
-  const handleSelectServer = async (server: any) => {
-    const response = await connectToServerAPI(server);
     setLoading(true);
+
     if (response.status === 200) {
       toast({
         title: "Connection Status",
         description: "Successful",
       });
-      handleSocketConnection(server);
-      const response = await getServerStatsAPI(server);
+      handleSocketConnection(server_id);
+      const response = await getServerStatsAPI(server_id);
       if (response.status === 200) {
         toast({
           title: "Data Retrival",
@@ -81,7 +84,7 @@ const ServerStatsCard = () => {
 
   const handleSocketConnection = (id: string) => {
     const server = servers.find((server) => server.id == id);
-    const socket = io(`${server.protocol}://${server.host}:${server.port}`);
+    const socket = io(`${server?.protocol}://${server?.host}:${server?.port}`);
     setSocket(socket);
   };
 
@@ -90,9 +93,9 @@ const ServerStatsCard = () => {
     socket?.disconnect();
   };
 
-  useEffect(() => {
-    handleFetchServers();
-  }, []);
+  // useEffect(() => {
+  //   if (activeServer.id) handleSelectServer(activeServer.id);
+  // }, [activeServer]);
 
   return (
     <div className="sticky top-20">
@@ -117,7 +120,10 @@ const ServerStatsCard = () => {
                   Disconnect
                 </Button>
               )}
-              <Select onValueChange={handleSelectServer}>
+              <Select
+                // defaultValue={activeServer.id}
+                onValueChange={handleSelectServer}
+              >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Servers" />
                 </SelectTrigger>
@@ -127,7 +133,9 @@ const ServerStatsCard = () => {
                       {server.name}
                     </SelectItem>
                   ))}
-                  {servers.length == 0 && <p className="p-2 text-xs text-center">No Servers Found</p>}
+                  {servers.length == 0 && (
+                    <p className="p-2 text-xs text-center">No Servers Found</p>
+                  )}
                 </SelectContent>
               </Select>
             </div>

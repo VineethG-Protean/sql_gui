@@ -43,7 +43,7 @@ const Database = () => {
 
     checkAuthorization();
   }, [user]);
-  
+
   return (
     <>
       {authorized ? (
@@ -63,11 +63,9 @@ const Database = () => {
               </TabsList>
             </Tabs>
             <Select
-              defaultValue={activeServer.id.toString()}
+              defaultValue={activeServer.id}
               onValueChange={(e) => {
-                const server = servers.find(
-                  (server, _) => server.id.toString() === e
-                );
+                const server = servers.find((server, _) => server.id === e);
                 if (server) dispatch(setActiveServer(server));
               }}
             >
@@ -76,7 +74,7 @@ const Database = () => {
               </SelectTrigger>
               <SelectContent>
                 {servers.map((server, index) => (
-                  <SelectItem key={index} value={server.id.toString()}>
+                  <SelectItem key={index} value={server.id}>
                     {server.name}
                   </SelectItem>
                 ))}

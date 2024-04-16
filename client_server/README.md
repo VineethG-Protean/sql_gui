@@ -1,9 +1,4 @@
-GET: http://localhost:3001/server/connect
-GET: http://localhost:3001/server/stats
 
-GET: http://localhost:3001/server/mysql/users
-POST: http://localhost:3001/server/mysql/users/create
-DELETE: http://localhost:3001/server/mysql/users/${user}
 
 # USER ROLES
 

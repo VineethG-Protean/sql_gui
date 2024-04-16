@@ -12,7 +12,7 @@ export const connectServer = async (req: Request, res: Response) => {
   try {
     const server = await mySqlSource.getRepository(Server).findOneBy({ id });
     const response: AxiosResponse = await axios.get(
-      `${server?.protocol}://${server?.host}:${server?.port}/connect`
+      `${server?.protocol}://${server?.host}:${server?.port}/server/connect`
     );
     if (response.status == 200) {
       return res.status(200).json(RESPONSE.OK("SERVER RESPONDED WITH 200"));
@@ -32,7 +32,7 @@ export const getStats = async (req: Request, res: Response) => {
   try {
     const server = await mySqlSource.getRepository(Server).findOneBy({ id });
     const response: AxiosResponse = await axios.get(
-      `${server?.protocol}://${server?.host}:${server?.port}/stats`
+      `${server?.protocol}://${server?.host}:${server?.port}/server/stats`
     );
     if (response.status === 200) {
       return res

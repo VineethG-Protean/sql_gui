@@ -17,6 +17,7 @@ import {
 import {
   Table,
   TableBody,
+  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -28,21 +29,36 @@ import { Input } from "../ui/input";
 import { getMysqlUsersAPI } from "../api/serverApi";
 import { Button } from "../ui/button";
 import { PlusCircle } from "lucide-react";
+import AddMySqlUserDialog from "../dialogs/add-mysqluser-dialog";
+import { useToast } from "../ui/use-toast";
 
 const UsersTab = () => {
+  const { toast } = useToast();
   const activeServer = useSelector((state: RootState) => state.activeServer);
   const [mysqlUsers, setMysqlUsers] = useState<any[]>([]);
   const [selectedUser, setSelectedUser] = useState<any>();
+  const [addMysqlUserDialogState, setAddMysqlUserDialogState] =
+    useState<boolean>(false);
 
   const handleFetchMysqlUsers = async () => {
     try {
       const response = await getMysqlUsersAPI(activeServer.id);
       setMysqlUsers(response.data.DATA);
-    } catch (error) {}
+      toast({
+        title: "Server Action",
+        description: "Users data has been fetched successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Server Action",
+        description: "Something went wrong",
+        variant: "destructive",
+      });
+    }
   };
 
   useEffect(() => {
-    handleFetchMysqlUsers();
+    if (activeServer.id) handleFetchMysqlUsers();
   }, [activeServer]);
 
   return (
@@ -54,7 +70,10 @@ const UsersTab = () => {
       <CardContent className="flex flex-col gap-2">
         <div className="flex justify-between items-center">
           <Input placeholder="Search user ... " className="w-48" />
-          <Button className="flex gap-2 items-center">
+          <Button
+            className="flex gap-2 items-center"
+            onClick={() => setAddMysqlUserDialogState(true)}
+          >
             <p>New</p>
             <PlusCircle className="h-4 w-4" />
           </Button>
@@ -92,6 +111,7 @@ const UsersTab = () => {
                   <p>Host: </p>
                   <p>{selectedUser?.Host}</p>
                 </div>
+                <p className="text-center">Global Privileges</p>
                 <ScrollArea className="h-[400px] w-full rounded-md border p-4 mt-4 dark:bg-neutral-900 bg-neutral-100">
                   <Table>
                     <TableHeader>
@@ -107,7 +127,7 @@ const UsersTab = () => {
                             privilege.endsWith("_priv") && (
                               <TableRow key={index}>
                                 <TableCell className="uppercase">
-                                  {privilege.split("_")[0]}
+                                  {privilege + "ilege"}
                                 </TableCell>
                                 <TableCell>{String(access)}</TableCell>
                               </TableRow>
@@ -125,6 +145,14 @@ const UsersTab = () => {
           </ResizablePanel>
         </ResizablePanelGroup>
       </CardContent>
+
+      <AddMySqlUserDialog
+        dialogState={addMysqlUserDialogState}
+        setDialogState={() =>
+          setAddMysqlUserDialogState(!addMysqlUserDialogState)
+        }
+        fetchMysqlUsers={handleFetchMysqlUsers}
+      />
     </Card>
   );
 };

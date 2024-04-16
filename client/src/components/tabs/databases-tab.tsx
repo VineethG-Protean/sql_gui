@@ -10,26 +10,79 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
+import { useToast } from "../ui/use-toast";
+import { getMysqlDatabasesAPI } from "../api/serverApi";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import { useEffect, useState } from "react";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import { PlusCircle } from "lucide-react";
 
 const DatabaseTab = () => {
+  const { toast } = useToast();
+  const activeServer = useSelector((state: RootState) => state.activeServer);
+  const [mysqlDatabases, setMysqlDatabases] = useState<any[]>([]);
+
+  const handleFetchMysqlDatabases = async () => {
+    try {
+      const response = await getMysqlDatabasesAPI(activeServer.id);
+      setMysqlDatabases(response.data.DATA[0]);
+      toast({
+        title: "Server Action",
+        description: "Users data has been fetched successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Server Action",
+        description: "Something went wrong",
+        variant: "destructive",
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (activeServer.id) handleFetchMysqlDatabases();
+  }, [activeServer]);
+
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Databases</CardTitle>
-        <CardDescription>List of databases</CardDescription>
+        <CardTitle>MySQL Users</CardTitle>
+        <CardDescription>List of MySQL users</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex flex-col gap-2">
+        <div className="flex justify-between items-center">
+          <Input placeholder="Search database ... " className="w-48" />
+          <Button className="flex gap-2 items-center">
+            <p>New</p>
+            <PlusCircle className="h-4 w-4" />
+          </Button>
+        </div>
         <ResizablePanelGroup
           direction="horizontal"
           className="min-h-[620px] rounded-md border"
         >
-          <ResizablePanel defaultSize={25} className="p-2">
-            DATABASES LIST
+          <ResizablePanel defaultSize={15} className="p-2" minSize={15}>
+            {mysqlDatabases.length != 0 ? (
+              mysqlDatabases.map((db, index) => (
+                <div
+                  key={index}
+                  className="px-4 py-2 hover:bg-primary rounded-md cursor-pointer transition-colors"
+                >{db.Database}</div>
+              ))
+            ) : (
+              <p className="h-full w-full flex justify-center items-center text-muted-foreground text-3xl">
+                No databases found
+              </p>
+            )}
           </ResizablePanel>
           <ResizableHandle withHandle />
-          <ResizablePanel defaultSize={75} className="p-2">
-            DATABASE INFORMATION
-          </ResizablePanel>
+          <ResizablePanel
+            defaultSize={85}
+            minSize={40}
+            className="p-4"
+          ></ResizablePanel>
         </ResizablePanelGroup>
       </CardContent>
     </Card>
