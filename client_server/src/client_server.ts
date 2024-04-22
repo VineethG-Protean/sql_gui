@@ -7,9 +7,9 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import { serverUtilization } from "./services/server-services";
-import USER from "./routes/root-user-routes/mysql-user-routes";
-import DB from "./routes/root-user-routes/mysql-database-routes";
-import TABLE from "./routes/root-user-routes/mysql-tables-routes";
+import ROOT_USER from "./routes/root-user-routes/root-mysql-user-routes";
+import ROOT_DB from "./routes/root-user-routes/root-mysql-database-routes";
+import ROOT_TABLE from "./routes/root-user-routes/root-mysql-tables-routes";
 
 const app: Express = express();
 const port = process.env.SERVER_PORT;
@@ -26,7 +26,10 @@ app.use(express.json());
 app.use(morgan("dev"));
 
 io.on("connection", (socket) => {
-  console.log("Client disconnected");
+  socket.on("connect", () => {
+    console.log("Client connected");
+  });
+
   const cpuInterval = setInterval(async () => {
     const serverStats = await serverUtilization();
     io.emit("server_dispatch", serverStats);
@@ -38,9 +41,9 @@ io.on("connection", (socket) => {
   });
 });
 
-app.use("/root/user", USER);
-app.use("/root/database", DB);
-app.use("/root/table", TABLE);
+app.use("/root/user", ROOT_USER);
+app.use("/root/database", ROOT_DB);
+app.use("/root/table", ROOT_TABLE);
 
 server.listen(port, () =>
   console.log(`⚡ | Server is running at http://localhost:${port}`)

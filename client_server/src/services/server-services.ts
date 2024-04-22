@@ -1,13 +1,14 @@
 import dotenv from "dotenv";
 dotenv.config();
-import os from "os";
-import { pool } from "../config/db-connection";
-import { executeUnsafeCommands } from "../utilities/execute-commands";
-import { Request, Response } from "express";
-import { RESPONSE } from "../utilities/response";
-import osu from "node-os-utils";
-let cpu = osu.cpu;
 
+import { Request, Response } from "express";
+import osu from "node-os-utils";
+import os from "os";
+
+import { pool } from "../config/db-connection";
+import { RESPONSE } from "../utilities/response";
+
+let cpu = osu.cpu;
 const connection = pool();
 
 export const serverUtilization = async () => {
@@ -37,12 +38,8 @@ export const mySqlServerStats = async (req: Request, res: Response) => {
         FROM information_schema.tables GROUP BY table_schema;'
     );
 
-    const DATA_DIR = await executeUnsafeCommands(
-      `mysql --user=${process.env.DB_USER} --password=${process.env.DB_PASS} --execute="SELECT @@datadir;"`
-    );
-    const BASE_DIR = await executeUnsafeCommands(
-      `mysql --user=${process.env.DB_USER} --password=${process.env.DB_PASS} --execute="SELECT @@basedir;"`
-    );
+    const DATA_DIR = await connection.query("SELECT @@datadir");
+    const BASE_DIR = await connection.query("SELECT @@basedir");
 
     return res.status(200).json(
       RESPONSE.OK("DATA RETURNED", {
