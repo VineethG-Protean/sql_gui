@@ -11,7 +11,7 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import { useToast } from "../ui/use-toast";
-import { getMysqlDatabasesAPI } from "../api/serverApi";
+import { getMysqlDatabaseSchemaAPI, getMysqlDatabasesAPI } from "../api/serverApi";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { useEffect, useState } from "react";
@@ -23,6 +23,7 @@ const DatabaseTab = () => {
   const { toast } = useToast();
   const activeServer = useSelector((state: RootState) => state.activeServer);
   const [mysqlDatabases, setMysqlDatabases] = useState<any[]>([]);
+  const [databaseSchema, setDatabaseSchema] = useState<{ characterSet: string, collation: string, encryption: string, name: string }>();
 
   const handleFetchMysqlDatabases = async () => {
     try {
@@ -30,7 +31,7 @@ const DatabaseTab = () => {
       setMysqlDatabases(response.data.DATA[0]);
       toast({
         title: "Server Action",
-        description: "Users data has been fetched successfully",
+        description: "Databases has been fetched successfully",
       });
     } catch (error) {
       toast({
@@ -40,6 +41,23 @@ const DatabaseTab = () => {
       });
     }
   };
+
+  const handleFetchMysqlDatabaseSchema = async (dbName: string) => {
+    try {
+      const response = await getMysqlDatabaseSchemaAPI({ server_id: activeServer.id, dbName })
+      setDatabaseSchema(response.data.DATA);
+      toast({
+        title: "Server Action",
+        description: "Schema has been fetched successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Server Action",
+        description: "Something went wrong",
+        variant: "destructive",
+      });
+    }
+  }
 
   useEffect(() => {
     if (activeServer.id) handleFetchMysqlDatabases();
@@ -69,6 +87,7 @@ const DatabaseTab = () => {
                 <div
                   key={index}
                   className="px-4 py-2 hover:bg-primary rounded-md cursor-pointer transition-colors"
+                  onClick={() => handleFetchMysqlDatabaseSchema(db.Database)}
                 >{db.Database}</div>
               ))
             ) : (
@@ -82,7 +101,17 @@ const DatabaseTab = () => {
             defaultSize={85}
             minSize={40}
             className="p-4"
-          ></ResizablePanel>
+          >
+            <div className="flex justify-between flex-wrap border border-muted px-4 py-6 rounded-md">
+              {databaseSchema && Object.entries(databaseSchema).map(([key, value]) => (
+                <span >
+                  <p className="uppercase font-semibold text-muted-foreground text-md">{key}</p>
+                  <p className="text-sm text-primary font-bold">{value}</p>
+                </span>
+              ))}
+            </div>
+
+          </ResizablePanel>
         </ResizablePanelGroup>
       </CardContent>
     </Card>

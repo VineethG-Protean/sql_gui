@@ -7,9 +7,8 @@ AUTH.post("/login", async (req: Request, res: Response) => {
   await loginService(req, res);
 });
 
-AUTH.get("/verify/:token", async (req: Request, res: Response) => {
-
-})
-
+AUTH.get("/verify", async (req: Request, res: Response) => {
+  const token = req.query.token;
+});
 
 export default AUTH;

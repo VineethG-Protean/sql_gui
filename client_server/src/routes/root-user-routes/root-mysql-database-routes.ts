@@ -13,7 +13,7 @@ ROOT_DB.get("/", async (req: Request, res: Response) => {
   await getMysqlDatabases(req, res);
 });
 
-ROOT_DB.get("/info", async (req: Request, res: Response) => {
+ROOT_DB.get("/schema", async (req: Request, res: Response) => {
   await getMysqlDatabaseInfo(req, res);
 });
 
@@ -21,7 +21,7 @@ ROOT_DB.post("/", async (req: Request, res: Response) => {
   await createMysqlDatabase(req, res);
 });
 
-ROOT_DB.delete("/:id", async (req: Request, res: Response) => {
+ROOT_DB.delete("/drop", async (req: Request, res: Response) => {
   await dropMysqlDatabase(req, res);
 });
 

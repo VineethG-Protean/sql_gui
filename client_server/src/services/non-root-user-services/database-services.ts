@@ -7,9 +7,14 @@ import { RESPONSE } from "../../utilities/response";
 dotenv.config();
 
 export const getMysqlDatabases = async (req: Request, res: Response) => {
-  const { username, password } = req.body;
+  const { credentials } = req.body;
+  if (!credentials)
+    return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
   try {
-    const connection = await privatePool(username, password).getConnection();
+    const connection = await privatePool(
+      credentials.username,
+      credentials.password
+    ).getConnection();
     const databases = await connection.query("SHOW DATABASES");
     connection.release();
     if (!databases) return res.status(404).json(RESPONSE.NOT_FOUND());
@@ -20,9 +25,14 @@ export const getMysqlDatabases = async (req: Request, res: Response) => {
 };
 
 export const getMysqlDatabaseInfo = async (req: Request, res: Response) => {
-  const { username, password, dbName } = req.body;
+  const { credentials, dbName } = req.body;
+  if (!credentials || !dbName)
+    return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
   try {
-    const connection = await privatePool(username, password).getConnection();
+    const connection = await privatePool(
+      credentials.username,
+      credentials.password
+    ).getConnection();
     const databaseInfoQuery = `SELECT CREATE DATABASE ?`;
     const databaseInfo = await connection.query(databaseInfoQuery, [dbName]);
     if (!databaseInfo) res.status(404).json(RESPONSE.NOT_FOUND());
@@ -33,5 +43,124 @@ export const getMysqlDatabaseInfo = async (req: Request, res: Response) => {
 };
 
 export const createMysqlDatabase = async (req: Request, res: Response) => {
-    
+  const {
+    credentials,
+    name,
+    characterSet,
+    defaultCharSet,
+    collate,
+    defaultCollate,
+    encryption,
+    defaultEncryption,
+    engine,
+  } = req.body;
+
+  if (
+    !credentials ||
+    !name ||
+    !characterSet ||
+    !defaultCharSet ||
+    !collate ||
+    !defaultCollate ||
+    !defaultEncryption ||
+    !encryption ||
+    !engine
+  )
+    return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
+
+  try {
+    const connection = await privatePool(
+      credentials.username,
+      credentials.password
+    ).getConnection();
+
+    const createDatabaseQuery = `CREATE DATABASE ${name} \
+    CHARACTER SET = ? \
+    DEFAULT CHARACTER SET = ? \
+    COLLATE = ? \
+    DEFAULT COLLATE = ? \
+    ENCRYPTION = ? \
+    DEFAULT ENCRYPTION = ? \
+    DEFAULT STORAGE ENGINE = ?`;
+
+    const createDatabase = await connection.query(createDatabaseQuery, [
+      characterSet,
+      defaultCharSet,
+      collate,
+      defaultCollate,
+      encryption,
+      defaultEncryption,
+      engine,
+    ]);
+
+    res.status(201).json(RESPONSE.CREATED());
+  } catch (error) {
+    return res.status(500).json(RESPONSE.INTERNAL_SERVER_ERROR());
+  }
+};
+
+export const dropMysqlDatabase = async (req: Request, res: Response) => {
+  const { credentials, dbName } = req.body;
+  if (!credentials || !dbName)
+    return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
+
+  try {
+    const connection = await privatePool(
+      credentials.username,
+      credentials.password
+    ).getConnection();
+    const dropDatabaseQuery = `DROP DATABASE IF EXISTS ?`;
+    const dropDatabase = await connection.query(dropDatabaseQuery, [dbName]);
+    return res
+      .status(204)
+      .json(RESPONSE.NO_CONTENT("DATABASE HAS BEEN DROPPED"));
+  } catch (error) {
+    return res.status(500).json(RESPONSE.INTERNAL_SERVER_ERROR());
+  }
+};
+
+export const alterMysqlDatabase = async (req: Request, res: Response) => {
+  const {
+    credentials,
+    name,
+    characterSet,
+    defaultCharSet,
+    collate,
+    defaultCollate,
+    encryption,
+    defaultEncryption,
+    engine,
+  } = req.body;
+  if (
+    !credentials ||
+    !name ||
+    !characterSet ||
+    !defaultCharSet ||
+    !collate ||
+    !defaultCollate ||
+    !defaultEncryption ||
+    !encryption ||
+    !engine
+  )
+    return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
+  try {
+    const connection = await privatePool(
+      credentials.username,
+      credentials.password
+    ).getConnection();
+
+    const alterDatabaseQuery = `ALTER DATABASE ${name}
+    CHARACTER SET = ${characterSet}
+    DEFAULT CHARACTER SET = ${defaultCharSet}
+    COLLATE = ${collate}
+    DEFAULT COLLATE = ${defaultCollate}
+    ENCRYPTION = ${encryption}
+    DEFAULT ENCRYPTION = ${defaultEncryption}
+    DEFAULT STORAGE ENGINE = ${engine}`;
+
+    await connection.query(alterDatabaseQuery);
+    return res.status(200).json(RESPONSE.OK());
+  } catch (error) {
+    return res.status(500).json(RESPONSE.INTERNAL_SERVER_ERROR());
+  }
 };

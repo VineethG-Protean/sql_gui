@@ -1,67 +1,136 @@
+# MYSQL SERVICES
 
+```
+protocol: http
+origin: localhost
+port: 3001
+```
 
-# USER ROLES
+---
 
-## ADMIN
+## ROOT ENDPOINTS
 
-## SERVER ADMIN
+#### USER
 
-- GLOBAL PRIVILEGES
-- DATABASE PRIVILAGES
+Get all mysql users
+Method: `GET`
+Path: `/root/user`
 
-## DATABASE ADMIN
+Create a mysql user
+Method: `POST`
+Path: `/root/user`
 
-- TABLE PRIVILAGES
+```
+{
+    name:string,
+    password:string,
+    host:string,
+    database:string,
+    privileges:string[]
+}
+```
 
-## BACKUP
+Drop a mysql user
+Method: `DELETE`
+Path: `/root/user&name=?&host=?`
 
-- BACKUP PRIVILAGES
+#### DATABASE
 
-## USER_L1
+Get all databases
+Method: `GET`
+Path: `/root/database`
 
-- LIMITED TABLE PRIVILAGES (R / W)
+Get individual database information
+Method: `GET`
+Path: `/root/database/info&dbName=?`
 
-## USER_L2
+Create a new database
+Method: `GET`
+Path: `/root/database`
 
-- LIMITED TABLE PRIVILAGES (R)
+```
+{
+    name:string,
+    characterSet:string,
+    defaultCharSet:string,
+    collate:string,
+    defaultCollate:string,
+    encryption:string,
+    defaultEncryption:string,
+    engine:string
+}
+```
 
-# Global Privileges:
+Drop a database
+Method: `DELETE`
+Path: `/root/database/drop&dbName=?`
 
-- CREATE USER: Allows the user to create new user accounts.
-- DROP USER: Allows the user to delete user accounts.
-- RELOAD: Allows the user to execute the FLUSH statement to reload server settings.
-- SHUTDOWN: Allows the user to shut down the MySQL server.
-- PROCESS: Allows the user to view the currently executing processes.
-- SUPER: Allows the user to perform administrative tasks. This includes killing processes, setting global variables, etc.
-- SHOW DATABASES: Allows the user to see all databases on the server.
-- REPLICATION CLIENT: Allows the user to ask where the slave or master servers are.
-- REPLICATION SLAVE: Needed for replication slaves to read binary log events from the master.
-- CREATE TEMPORARY TABLES: Allows the user to create temporary tables.
+Alter a database
+Method: `PUT`
+Path: `/root/database`
 
-# Database Privileges:
+```
+{
+    name:string,
+    characterSet:string,
+    defaultCharSet:string,
+    collate:string,
+    defaultCollate:string,
+    encryption:string,
+    defaultEncryption:string,
+    engine:string
+}
+```
 
-- CREATE: Allows the user to create new databases.
-- ALTER: Allows the user to alter existing databases.
-- DROP: Allows the user to drop databases.
-- SHOW VIEW: Allows the user to see views within databases.
-- EVENT: Allows the user to create, alter, drop, and execute events.
+#### TABLE
 
-# Table Privileges:
+Get all tables
+Method: `GET`
+Path: `/root/table&dbName=?`
 
-- SELECT: Allows the user to read data from tables.
-- INSERT: Allows the user to insert data into tables.
-- UPDATE: Allows the user to update existing data in tables.
-- DELETE: Allows the user to delete data from tables.
-- CREATE VIEW: Allows the user to create views.
-- ALTER VIEW: Allows the user to alter views.
-- DROP VIEW: Allows the user to drop views.
-- CREATE TABLE: Allows the user to create new tables.
-- ALTER TABLE: Allows the user to alter existing tables.
-- INDEX: Allows the user to create and drop indexes.
+Get table schema
+Method: `GET`
+Path: `/root/table/schema&dbName=?&tableName=?`
 
-# Routine Privileges (Stored Procedures and Functions):
+Create a table
+Method: `POST`
+Path: `/root/table`
 
-- CREATE ROUTINE: Allows the user to create stored procedures and functions.
-- ALTER ROUTINE: Allows the user to alter existing stored procedures and functions.
-- EXECUTE: Allows the user to execute stored procedures and functions.
-- DROP ROUTINE: Allows the user to drop stored procedures and functions.
+```
+{
+    databaseName:string,
+    tableName:string
+    columns: [
+        {
+            columnName:string,
+            dataType:string,
+            constraints:string[],
+            key:string
+        }
+    ]
+}
+```
+
+Drop a table
+Method: `DELETE`
+Path: `/root/table&dbName=?&tableName=?`
+
+Alter Table Schema
+Method: `PUT`
+Path: `/root/table`
+
+```
+{
+    databaseName:string,
+    tableName:string,
+    alterations:[
+        {
+            type:string,
+            columnName:string,
+            newColumnName:string,
+            dataType:string,
+            constraints:string[]
+        }
+    ]
+}
+```

@@ -9,11 +9,13 @@ import AUTH from "./routes/auth-routes";
 import ADMIN from "./routes/admin-routes";
 import USER from "./routes/user-routes";
 import STATS from "./routes/mysql/stats-routes";
-import GLOBAL from "./routes/mysql/global-routes";
+import MYSQL_USER from "./routes/mysql/user-routes";
 
 import { mySqlSource } from "./config/data-source";
 import { User } from "./entities/User";
 import { encryptPassword } from "./utilities/encryption";
+import MYSQL_DATABASE from "./routes/mysql/database-routes";
+import MYSQL_TABLE from "./routes/mysql/table-routes";
 
 const app: Express = express();
 const port = process.env.SERVER_PORT;
@@ -32,11 +34,13 @@ mySqlSource
     console.error("Error during Data Source initialization:", err);
   });
 
-app.use("/api/auth", AUTH);
-app.use("/api/admin", ADMIN);
-app.use("/api/user", USER);
-app.use("/api/stats", STATS);
-app.use("/api/global", GLOBAL);
+app.use("/auth", AUTH);
+app.use("/admin", ADMIN);
+app.use("/user", USER);
+app.use("/mysql/stats", STATS);
+app.use("/mysql/user", MYSQL_USER);
+app.use("/mysql/database", MYSQL_DATABASE);
+app.use("/mysql/table", MYSQL_TABLE);
 
 app.get("/test", async (req: Request, res: Response) => {
   const encryptedPassword = await encryptPassword("admin");

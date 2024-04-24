@@ -7,12 +7,11 @@ import { pool } from "../../config/db-connection";
 const connection = pool();
 
 export const getAllTables = async (req: Request, res: Response) => {
-  const { databaseName } = req.body;
-  if (!databaseName)
-    return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
+  const dbName = req.query.dbName;
+  if (!dbName) return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
   try {
     const showTablesQuery = `SHOW TABLES FROM ?`;
-    const tables = await connection.query(showTablesQuery, [databaseName]);
+    const tables = await connection.query(showTablesQuery, [dbName]);
     if (!tables) return res.status(404).json(RESPONSE.NOT_FOUND());
     return res.status(200).json(RESPONSE.OK("DATA RETURNED", tables));
   } catch (error) {
@@ -21,11 +20,12 @@ export const getAllTables = async (req: Request, res: Response) => {
 };
 
 export const getTableSchema = async (req: Request, res: Response) => {
-  const { databaseName } = req.body;
-  if (!databaseName)
+  const dbName = req.query.dbName;
+  const tableName = req.query.tableName;
+  if (!tableName || !dbName)
     return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
   try {
-    const schema = await connection.query(`DESCRIBE ?`, [databaseName]);
+    const schema = await connection.query(`DESCRIBE ?.?`, [dbName, tableName]);
     if (!schema) return res.status(404).json(RESPONSE.NOT_FOUND());
     return res.status(200).json(RESPONSE.OK("DATA RETURNED", schema));
   } catch (error) {
@@ -34,11 +34,11 @@ export const getTableSchema = async (req: Request, res: Response) => {
 };
 
 export const createTable = async (req: Request, res: Response) => {
-  const { tableName, columns } = req.body;
-  if (!tableName || !columns)
+  const { databaseName, tableName, columns } = req.body;
+  if (!databaseName || !tableName || !columns)
     return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
   try {
-    let query = `CREATE TABLE ${tableName} (`;
+    let query = `CREATE TABLE ${databaseName}.${tableName} (`;
     for (let i = 0; i < columns.length; i++) {
       const { columnName, dataType, constraints, key } = columns[i];
       query += `${columnName} ${dataType}`;
@@ -63,10 +63,15 @@ export const createTable = async (req: Request, res: Response) => {
 };
 
 export const dropTable = async (req: Request, res: Response) => {
-  const { tableName } = req.body;
-  if (!tableName) return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
+  const dbName = req.query.dbName;
+  const tableName = req.query.tableName;
+  if (!dbName || !tableName)
+    return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
   try {
-    const result = await connection.query(`DROP TABLE ?`, [tableName]);
+    const result = await connection.query(`DROP TABLE ?.?`, [
+      dbName,
+      tableName,
+    ]);
     if (result)
       return res.status(204).json(RESPONSE.NO_CONTENT("TABLE DROPPED"));
   } catch (error) {

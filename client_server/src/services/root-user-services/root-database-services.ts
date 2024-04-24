@@ -18,12 +18,30 @@ export const getMysqlDatabases = async (req: Request, res: Response) => {
 };
 
 export const getMysqlDatabaseInfo = async (req: Request, res: Response) => {
-  const dbName = req.query.dbName;
+  const dbName = req.query.dbName as string;
   if (!dbName) return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
   try {
-    const databaseInfoQuery = `SELECT CREATE DATABASE ?`;
-    const databaseInfo = await connection.query(databaseInfoQuery, [dbName]);
-    if (!databaseInfo) res.status(404).json(RESPONSE.NOT_FOUND());
+    const databaseInfoQuery = `SHOW CREATE DATABASE ${connection.escapeId(
+      dbName
+    )}`;
+    const [databaseInfoRows]: any = await connection.query(databaseInfoQuery);
+
+    if (!databaseInfoRows.length)
+      return res.status(404).json({ error: "Database not found." });
+    const createStatement = databaseInfoRows[0]["Create Database"];
+    const match = createStatement.match(
+      /DEFAULT CHARACTER SET (\S+) COLLATE (\S+)/
+    );
+    const characterSet = match ? match[1] : null;
+    const collation = match ? match[2] : null;
+    const encryptionMatch = createStatement.match(/DEFAULT ENCRYPTION='(\S+)'/);
+    const encryption = encryptionMatch ? encryptionMatch[1] : null;
+    const databaseInfo = {
+      name: dbName,
+      characterSet,
+      collation,
+      encryption,
+    };
     return res.status(200).json(RESPONSE.OK("", databaseInfo));
   } catch (error) {
     return res.status(500).json(RESPONSE.INTERNAL_SERVER_ERROR());
@@ -53,15 +71,16 @@ export const createMysqlDatabase = async (req: Request, res: Response) => {
   )
     return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
   try {
-  } catch (error) {
-    const createDatabaseQuery = `CREATE DATABASE ${name} \
-    CHARACTER SET = ? \
-    DEFAULT CHARACTER SET = ? \
-    COLLATE = ? \
-    DEFAULT COLLATE = ? \
-    ENCRYPTION = ? \
-    DEFAULT ENCRYPTION = ? \
-    DEFAULT STORAGE ENGINE = ?`;
+    const createDatabaseQuery = `
+      CREATE DATABASE ${name}
+      CHARACTER SET = ?
+      DEFAULT CHARACTER SET = ?
+      COLLATE = ?
+      DEFAULT COLLATE = ?
+      ENCRYPTION = ?
+      DEFAULT ENCRYPTION = ?
+      DEFAULT STORAGE ENGINE = ?
+    `;
 
     const createDatabase = await connection.query(createDatabaseQuery, [
       characterSet,
@@ -74,6 +93,7 @@ export const createMysqlDatabase = async (req: Request, res: Response) => {
     ]);
 
     res.status(201).json(RESPONSE.CREATED());
+  } catch (error) {
     return res.status(500).json(RESPONSE.INTERNAL_SERVER_ERROR());
   }
 };
@@ -102,6 +122,7 @@ export const alterMysqlDatabase = async (req: Request, res: Response) => {
     defaultEncryption,
     engine,
   } = req.body;
+
   if (
     !name ||
     !characterSet ||
@@ -111,20 +132,36 @@ export const alterMysqlDatabase = async (req: Request, res: Response) => {
     !defaultEncryption ||
     !encryption ||
     !engine
-  )
-    return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
+  ) {
+    return res.status(422).json({ error: "Missing required parameters" });
+  }
+
   try {
-    const alterDatabaseQuery = `ALTER DATABASE ${name}
-    CHARACTER SET = ${characterSet}
-    DEFAULT CHARACTER SET = ${defaultCharSet}
-    COLLATE = ${collate}
-    DEFAULT COLLATE = ${defaultCollate}
-    ENCRYPTION = ${encryption}
-    DEFAULT ENCRYPTION = ${defaultEncryption}
-    DEFAULT STORAGE ENGINE = ${engine}`;
-    await connection.query(alterDatabaseQuery);
-    return res.status(200).json(RESPONSE.OK());
+    const alterDatabaseQuery = `
+      ALTER DATABASE ?
+      CHARACTER SET = ?
+      DEFAULT CHARACTER SET = ?
+      COLLATE = ?
+      DEFAULT COLLATE = ?
+      ENCRYPTION = ?
+      DEFAULT ENCRYPTION = ?
+      DEFAULT STORAGE ENGINE = ?
+    `;
+
+    await connection.query(alterDatabaseQuery, [
+      name,
+      characterSet,
+      defaultCharSet,
+      collate,
+      defaultCollate,
+      encryption,
+      defaultEncryption,
+      engine,
+    ]);
+
+    return res.status(200).json({ message: "Database altered successfully" });
   } catch (error) {
-    return res.status(500).json(RESPONSE.INTERNAL_SERVER_ERROR());
+    console.error("Error altering database:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };

@@ -21,9 +21,9 @@ export const loginAPI = (data: {
   username: string;
   password: string;
 }): Promise<AxiosResponse> => {
-  return axios.post(`http://localhost:3000/api/auth/login`, data);
+  return axios.post(`/api/auth/login`, data);
 };
 
 export const verifyAPI = (token: string): Promise<AxiosResponse> => {
-  return axios.get(`http://localhost:3000/api/auth/verify/${token}`);
+  return axios.get(`/api/auth/verify/${token}`);
 }

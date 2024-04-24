@@ -47,7 +47,7 @@ export const addServerAPI = async (data: {
   password: string;
   type: string;
 }): Promise<AxiosResponse> => {
-  return axios.post(`http://localhost:3000/api/admin/server`, data, {
+  return axios.post(`/api/admin/server`, data, {
     headers: { "x-access-token": getToken().toString() },
   });
 };
@@ -62,13 +62,13 @@ export const updateServerAPI = async (data: {
   password: string;
   type: string;
 }): Promise<AxiosResponse> => {
-  return axios.put(`http://localhost:3000/api/admin/server`, data, {
+  return axios.put(`/api/admin/server`, data, {
     headers: { "x-access-token": getToken().toString() },
   });
 };
 
 export const deleteServerAPI = async (id: number): Promise<AxiosResponse> => {
-  return axios.delete(`http://localhost:3000/api/admin/server/${id}`, {
+  return axios.delete(`/api/admin/server/${id}`, {
     headers: { "x-access-token": getToken().toString() },
   });
 };

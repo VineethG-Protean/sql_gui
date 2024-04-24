@@ -1,19 +1,16 @@
 import express, { Request, Response } from "express";
-import tokenValidator from "../../middlewares/token-validator";
-import {
-  connectServer,
-  getStats,
-} from "../../services/mysql-services/stats-services";
+import { clientServer_GET } from "../../services/mysql-server-services";
+import TokenValidator from "../../middlewares/token-validator";
 
 const STATS = express();
-STATS.use(tokenValidator);
+STATS.use(TokenValidator);
 
 STATS.get("/connect/:id", async (req: Request, res: Response) => {
-  await connectServer(req, res);
+  await clientServer_GET(req, res, "/server/connect");
 });
 
 STATS.get("/:id", async (req: Request, res: Response) => {
-  await getStats(req, res);
+  await clientServer_GET(req, res, "/server/stats");
 });
 
 export default STATS;

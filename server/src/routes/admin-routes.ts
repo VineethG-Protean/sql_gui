@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 
-import tokenValidator from "../middlewares/token-validator";
-import verifyAdmin from "../middlewares/verify-admin";
+import TokenValidator from "../middlewares/token-validator";
+import VerifyAdmin from "../middlewares/verify-admin";
 
 import {
   addServer,
@@ -14,8 +14,8 @@ import {
 } from "../services/admin-services";
 
 const ADMIN = express();
-ADMIN.use(tokenValidator);
-ADMIN.use(verifyAdmin);
+ADMIN.use(TokenValidator);
+ADMIN.use(VerifyAdmin);
 
 ADMIN.get("/users", async (req: Request, res: Response) => {
   await getAllUsers(req, res);

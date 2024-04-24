@@ -5,7 +5,7 @@ import { RESPONSE } from '../utilities/response';
 
 import { User } from '../entities/User';
 
-const verifyAdmin = async (req: Request, res: Response, next: NextFunction) => {
+const VerifyAdmin = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const getUser = await mySqlSource.getRepository(User).findOneBy({ id: res.locals.user_id });
         if (getUser && getUser.role === "admin") {
@@ -18,4 +18,4 @@ const verifyAdmin = async (req: Request, res: Response, next: NextFunction) => {
     }
 }
 
-export default verifyAdmin;
+export default VerifyAdmin;
