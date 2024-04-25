@@ -37,8 +37,7 @@ export const createMysqlUser = async (req: Request, res: Response) => {
 };
 
 export const dropMysqlUser = async (req: Request, res: Response) => {
-  const name = req.query.name;
-  const host = req.query.host;
+  const { name, host } = req.body;
   if (!name || !host)
     return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
   try {

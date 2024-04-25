@@ -3,7 +3,7 @@ import {
   createMysqlUser,
   dropMysqlUser,
   getMysqlUsers,
-} from "../../services/root-user-services/root-user-services";
+} from "../../services/root-user-services/root-mysql-user-services";
 
 const ROOT_USER = express();
 
@@ -15,7 +15,7 @@ ROOT_USER.post("/", async (req: Request, res: Response) => {
   await createMysqlUser(req, res);
 });
 
-ROOT_USER.delete("/", async (req: Request, res: Response) => {
+ROOT_USER.post("/delete", async (req: Request, res: Response) => {
   await dropMysqlUser(req, res);
 });
 

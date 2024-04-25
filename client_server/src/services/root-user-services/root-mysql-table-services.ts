@@ -7,7 +7,7 @@ import { pool } from "../../config/db-connection";
 const connection = pool();
 
 export const getAllTables = async (req: Request, res: Response) => {
-  const dbName = req.query.dbName;
+  const { dbName } = req.body;
   if (!dbName) return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
   try {
     const showTablesQuery = `SHOW TABLES FROM ?`;
@@ -19,9 +19,8 @@ export const getAllTables = async (req: Request, res: Response) => {
   }
 };
 
-export const getTableSchema = async (req: Request, res: Response) => {
-  const dbName = req.query.dbName;
-  const tableName = req.query.tableName;
+export const getSchema = async (req: Request, res: Response) => {
+  const { dbName, tableName } = req.body;
   if (!tableName || !dbName)
     return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
   try {
@@ -63,8 +62,7 @@ export const createTable = async (req: Request, res: Response) => {
 };
 
 export const dropTable = async (req: Request, res: Response) => {
-  const dbName = req.query.dbName;
-  const tableName = req.query.tableName;
+  const { dbName, tableName } = req.body;
   if (!dbName || !tableName)
     return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
   try {
@@ -79,7 +77,7 @@ export const dropTable = async (req: Request, res: Response) => {
   }
 };
 
-export const alterTableSchema = async (req: Request, res: Response) => {
+export const alterTable = async (req: Request, res: Response) => {
   const { tableName, alterations } = req.body;
   if (
     !tableName ||
@@ -121,13 +119,6 @@ export const alterTableSchema = async (req: Request, res: Response) => {
     await connection.query(query);
     return res.status(200).json(RESPONSE.OK());
   } catch (error) {
-    console.error("Error altering table schema:", error);
     return res.status(500).json(RESPONSE.INTERNAL_SERVER_ERROR());
   }
 };
-
-export const getTableData = async (req: Request, res: Response) => {};
-
-export const deleteTableData = async (req: Request, res: Response) => {};
-
-export const alterTableData = async (req: Request, res: Response) => {};

@@ -1,39 +1,36 @@
 import express, { Request, Response } from "express";
+
 import {
-  alterTable,
-  createTable,
-  dropTable,
-  getAllTables,
-  getSchema,
-} from "../../services/root-user-services/root-mysql-table-services";
+  addTableData,
+  alterTableData,
+  deleteTableData,
+  getTableData,
+} from "../../services/root-user-services/root-mysql-table-data-services";
 import { RESPONSE } from "../../utilities/response";
 
-const ROOT_TABLE = express();
+const ROOT_TABLE_DATA = express();
 
-ROOT_TABLE.post("/", async (req: Request, res: Response) => {
+ROOT_TABLE_DATA.post("/data", async (req: Request, res: Response) => {
   const { action } = req.query;
   if (typeof action !== "string") {
     return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
   }
   switch (action) {
     case "get":
-      await getAllTables(req, res);
-      break;
-    case "schema":
-      await getSchema(req, res);
+      await getTableData(req, res);
       break;
     case "add":
-      await createTable(req, res);
+      await addTableData(req, res);
       break;
     case "drop":
-      await dropTable(req, res);
+      await deleteTableData(req, res);
       break;
     case "alter":
-      await alterTable(req, res);
+      await alterTableData(req, res);
       break;
     default:
       return res.status(409).json(RESPONSE.CONFLICT());
   }
 });
 
-export default ROOT_TABLE;
+export default ROOT_TABLE_DATA;

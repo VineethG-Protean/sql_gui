@@ -6,18 +6,16 @@ origin: localhost
 port: 3001
 ```
 
----
 
 ## ROOT ENDPOINTS
 
 #### USER
-
-Get all mysql users
-Method: `GET`
+**Get all mysql users**\
+Method: `GET`\
 Path: `/root/user`
 
-Create a mysql user
-Method: `POST`
+**Create a mysql user**\
+Method: `POST`\
 Path: `/root/user`
 
 ```
@@ -30,23 +28,29 @@ Path: `/root/user`
 }
 ```
 
-Drop a mysql user
-Method: `DELETE`
-Path: `/root/user&name=?&host=?`
+**Drop a mysql user**\
+Method: `POST`\
+Path: `/root/user/delete`
+```
+{
+  name:string,
+  host:string
+}
+```
 
 #### DATABASE
 
-Get all databases
-Method: `GET`
-Path: `/root/database`
+**Get all databases**\
+Method: `POST`\
+Path: `/root/database?action="get"`
 
-Get individual database information
-Method: `GET`
-Path: `/root/database/info&dbName=?`
+**Get individual database information**\
+Method: `POST`\
+Path: `/root/database?action="schema"`
 
-Create a new database
-Method: `GET`
-Path: `/root/database`
+**Create a new database**\
+Method: `POST`\
+Path: `/root/database?action="add"`
 
 ```
 {
@@ -61,13 +65,13 @@ Path: `/root/database`
 }
 ```
 
-Drop a database
-Method: `DELETE`
-Path: `/root/database/drop&dbName=?`
+**Drop a database**\
+Method: `POST`\
+Path: `/root/database?action="drop"`
 
-Alter a database
-Method: `PUT`
-Path: `/root/database`
+**Alter a database**\
+Method: `POST`\
+Path: `/root/database?action="alter"`
 
 ```
 {
@@ -84,17 +88,23 @@ Path: `/root/database`
 
 #### TABLE
 
-Get all tables
-Method: `GET`
-Path: `/root/table&dbName=?`
+**Get All Tables**\
+Method: `POST`\
+Path: `/root/table?action="get"`
 
-Get table schema
-Method: `GET`
-Path: `/root/table/schema&dbName=?&tableName=?`
+**Get table schema**\
+Method: `POST`\
+Path: `/root/table?action="schema"`
+```
+{
+  dbName:string,
+  tableName:string
+}
+```
 
-Create a table
-Method: `POST`
-Path: `/root/table`
+**Create a table**\
+Method: `POST`\
+Path: `/root/table?action="add"`
 
 ```
 {
@@ -111,13 +121,19 @@ Path: `/root/table`
 }
 ```
 
-Drop a table
-Method: `DELETE`
-Path: `/root/table&dbName=?&tableName=?`
+**Drop a table**\
+Method: `POST`\
+Path: `/root/table?action="drop"`
+```
+{
+  dbName:string,
+  tableName:string
+}
+```
 
-Alter Table Schema
-Method: `PUT`
-Path: `/root/table`
+**Alter Table Schema**\
+Method: `POST`\
+Path: `/root/table?action="alter"`
 
 ```
 {
@@ -132,5 +148,57 @@ Path: `/root/table`
             constraints:string[]
         }
     ]
+}
+```
+
+#### TABLE DATA
+
+**Get Table Data**\
+Method: `POST`\
+Path: `/root/table/data?action="get"`
+
+```
+{
+  dbName:string,
+  tableName:string
+}
+```
+
+**Add Table Data**\
+Method: `POST`\
+Path: `/root/table/data?action="add"`
+
+```
+{
+  dbName:string,
+  tableName:string
+  data: [
+    row:string,
+    data:string
+  ]
+}
+```
+
+**Delete Table Data**\
+Method: `POST`\
+Path: `/root/table/data?action="drop"`
+
+```
+{
+  dbName:string,
+  tableName:string,
+  row:string
+}
+```
+
+**Alter Table Data**\
+Method: `PUT`\
+Path: `/root/table/data?action="alter"`
+
+```
+{
+  dbName:string,
+  tableName:string,
+  alterations:string
 }
 ```

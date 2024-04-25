@@ -3,30 +3,35 @@ import {
   alterMysqlDatabase,
   createMysqlDatabase,
   dropMysqlDatabase,
-  getMysqlDatabaseInfo,
+  getMysqlDatabase,
   getMysqlDatabases,
-} from "../../services/root-user-services/root-database-services";
+} from "../../services/root-user-services/root-mysql-database-services";
+import { RESPONSE } from "../../utilities/response";
 
 const ROOT_DB = express();
 
-ROOT_DB.get("/", async (req: Request, res: Response) => {
-  await getMysqlDatabases(req, res);
-});
-
-ROOT_DB.get("/schema", async (req: Request, res: Response) => {
-  await getMysqlDatabaseInfo(req, res);
-});
-
 ROOT_DB.post("/", async (req: Request, res: Response) => {
-  await createMysqlDatabase(req, res);
-});
-
-ROOT_DB.delete("/drop", async (req: Request, res: Response) => {
-  await dropMysqlDatabase(req, res);
-});
-
-ROOT_DB.put("/", async (req: Request, res: Response) => {
-  await alterMysqlDatabase(req, res);
+  const { action } = req.query;
+  if (typeof action !== "string") {
+    return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
+  }
+  switch (action) {
+    case "get":
+      await getMysqlDatabases(req, res);
+      break;
+    case "schema":
+      await getMysqlDatabase(req, res);
+      break;
+    case "add":
+      await createMysqlDatabase(req, res);
+      break;
+    case "drop":
+      await dropMysqlDatabase(req, res);
+      break;
+    case "alter":
+      await alterMysqlDatabase(req, res);
+      break;
+  }
 });
 
 export default ROOT_DB;

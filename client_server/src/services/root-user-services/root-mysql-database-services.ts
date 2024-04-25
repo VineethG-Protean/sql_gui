@@ -17,8 +17,8 @@ export const getMysqlDatabases = async (req: Request, res: Response) => {
   }
 };
 
-export const getMysqlDatabaseInfo = async (req: Request, res: Response) => {
-  const dbName = req.query.dbName as string;
+export const getMysqlDatabase = async (req: Request, res: Response) => {
+  const { dbName } = req.body;
   if (!dbName) return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
   try {
     const databaseInfoQuery = `SHOW CREATE DATABASE ${connection.escapeId(
@@ -99,7 +99,7 @@ export const createMysqlDatabase = async (req: Request, res: Response) => {
 };
 
 export const dropMysqlDatabase = async (req: Request, res: Response) => {
-  const dbName = req.query.dbName;
+  const { dbName } = req.body;
   try {
     const dropDatabaseQuery = `DROP DATABASE IF EXISTS ?`;
     const dropDatabase = await connection.query(dropDatabaseQuery, [dbName]);

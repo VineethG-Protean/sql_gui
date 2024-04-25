@@ -21,7 +21,7 @@ MYSQL_TABLE.get("/:id", async (req: Request, res: Response) => {
   );
 });
 
-MYSQL_TABLE.get("/:id", async (req: Request, res: Response) => {
+MYSQL_TABLE.get("/:server_id", async (req: Request, res: Response) => {
   const dbName = req.query.dbName;
   const tableName = req.query.tableName;
   await clientServer_GET(
@@ -31,21 +31,15 @@ MYSQL_TABLE.get("/:id", async (req: Request, res: Response) => {
   );
 });
 
-MYSQL_TABLE.post("/", async (req: Request, res: Response) => {
+MYSQL_TABLE.post("/:server_id", async (req: Request, res: Response) => {
   await clientServer_POST(req, res, `${res.locals.privilege}table`);
 });
 
-MYSQL_TABLE.delete("/", async (req: Request, res: Response) => {
-  const dbName = req.query.dbName;
-  const tableName = req.query.tableName;
-  await clientServer_DELETE(
-    req,
-    res,
-    `${res.locals.privilege}table&dbName=${dbName}&tableName=${tableName}`
-  );
+MYSQL_TABLE.post("/delete/:server_id", async (req: Request, res: Response) => {
+  await clientServer_POST(req, res, `${res.locals.privilege}table/delete`);
 });
 
-MYSQL_TABLE.put("/", async (req: Request, res: Response) => {
+MYSQL_TABLE.put("/:server_id", async (req: Request, res: Response) => {
   await clientServer_PUT(req, res, `${res.locals.privilege}table`);
 });
 

@@ -21,14 +21,8 @@ MYSQL_USER.post("/:server_id", async (req: Request, res: Response) => {
   await clientServer_POST(req, res, `${res.locals.privilege}user`);
 });
 
-MYSQL_USER.delete("/:server_id", async (req: Request, res: Response) => {
-  const name = req.query.name;
-  const host = req.query.host;
-  await clientServer_DELETE(
-    req,
-    res,
-    `${res.locals.privilege}user?name=${name}&host=${host}`
-  );
+MYSQL_USER.post("/:server_id", async (req: Request, res: Response) => {
+  await clientServer_POST(req, res, `${res.locals.privilege}user'/delete`);
 });
 
 export default MYSQL_USER;
