@@ -11,7 +11,7 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import { useToast } from "../ui/use-toast";
-import { getMysqlDatabaseSchemaAPI, getMysqlDatabasesAPI } from "../api/serverApi";
+import { getMysqlDatabaseSchemaAPI, getMysqlDatabasesAPI } from "../api/mysqlDatabaseApi";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { useEffect, useState } from "react";
@@ -27,7 +27,7 @@ const DatabaseTab = () => {
 
   const handleFetchMysqlDatabases = async () => {
     try {
-      const response = await getMysqlDatabasesAPI(activeServer.id);
+      const response = await getMysqlDatabasesAPI({ server_id: activeServer.id });
       setMysqlDatabases(response.data.DATA[0]);
       toast({
         title: "Server Action",

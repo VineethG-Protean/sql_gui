@@ -5,8 +5,8 @@ import { Request, Response } from "express";
 import osu from "node-os-utils";
 import os from "os";
 
-import { pool } from "../config/db-connection";
-import { RESPONSE } from "../utilities/response";
+import { pool } from "@/config/db-connection";
+import { RESPONSE } from "@/utilities/response";
 
 let cpu = osu.cpu;
 const connection = pool();
@@ -28,7 +28,7 @@ export const serverUtilization = async () => {
   };
 };
 
-export const mySqlServerStats = async (req: Request, res: Response) => {
+export const mySqlServerStats = async (_: Request, res: Response) => {
   try {
     const [UPTIME]: any = await connection.query("SHOW STATUS LIKE 'Uptime';");
     const [VERSION]: any = await connection.query("SELECT VERSION()");

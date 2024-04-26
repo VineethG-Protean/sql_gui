@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import dotenv from "dotenv";
 
-import { privatePool } from "../../config/db-connection";
-import { RESPONSE } from "../../utilities/response";
+import { privatePool } from "@/config/db-connection";
+import { RESPONSE } from "@/utilities/response";
 
 dotenv.config();
 
@@ -12,8 +12,10 @@ export const getMysqlDatabases = async (req: Request, res: Response) => {
     return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
   try {
     const connection = await privatePool(
+      credentials.host,
       credentials.username,
-      credentials.password
+      credentials.password,
+      credentials.database
     ).getConnection();
     const databases = await connection.query("SHOW DATABASES");
     connection.release();
@@ -30,12 +32,15 @@ export const getMysqlDatabaseInfo = async (req: Request, res: Response) => {
     return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
   try {
     const connection = await privatePool(
+      credentials.host,
       credentials.username,
-      credentials.password
+      credentials.password,
+      credentials.database
     ).getConnection();
     const databaseInfoQuery = `SELECT CREATE DATABASE ?`;
     const databaseInfo = await connection.query(databaseInfoQuery, [dbName]);
     if (!databaseInfo) res.status(404).json(RESPONSE.NOT_FOUND());
+    connection.release();
     return res.status(200).json(RESPONSE.OK("", databaseInfo));
   } catch (error) {
     return res.status(500).json(RESPONSE.INTERNAL_SERVER_ERROR());
@@ -70,8 +75,10 @@ export const createMysqlDatabase = async (req: Request, res: Response) => {
 
   try {
     const connection = await privatePool(
+      credentials.host,
       credentials.username,
-      credentials.password
+      credentials.password,
+      credentials.database
     ).getConnection();
 
     const createDatabaseQuery = `CREATE DATABASE ${name} \
@@ -83,7 +90,7 @@ export const createMysqlDatabase = async (req: Request, res: Response) => {
     DEFAULT ENCRYPTION = ? \
     DEFAULT STORAGE ENGINE = ?`;
 
-    const createDatabase = await connection.query(createDatabaseQuery, [
+    await connection.query(createDatabaseQuery, [
       characterSet,
       defaultCharSet,
       collate,
@@ -93,6 +100,7 @@ export const createMysqlDatabase = async (req: Request, res: Response) => {
       engine,
     ]);
 
+    connection.release();
     res.status(201).json(RESPONSE.CREATED());
   } catch (error) {
     return res.status(500).json(RESPONSE.INTERNAL_SERVER_ERROR());
@@ -106,11 +114,14 @@ export const dropMysqlDatabase = async (req: Request, res: Response) => {
 
   try {
     const connection = await privatePool(
+      credentials.host,
       credentials.username,
-      credentials.password
+      credentials.password,
+      credentials.database
     ).getConnection();
     const dropDatabaseQuery = `DROP DATABASE IF EXISTS ?`;
-    const dropDatabase = await connection.query(dropDatabaseQuery, [dbName]);
+    await connection.query(dropDatabaseQuery, [dbName]);
+    connection.release();
     return res
       .status(204)
       .json(RESPONSE.NO_CONTENT("DATABASE HAS BEEN DROPPED"));
@@ -145,8 +156,10 @@ export const alterMysqlDatabase = async (req: Request, res: Response) => {
     return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
   try {
     const connection = await privatePool(
+      credentials.host,
       credentials.username,
-      credentials.password
+      credentials.password,
+      credentials.database
     ).getConnection();
 
     const alterDatabaseQuery = `ALTER DATABASE ${name}
@@ -159,6 +172,7 @@ export const alterMysqlDatabase = async (req: Request, res: Response) => {
     DEFAULT STORAGE ENGINE = ${engine}`;
 
     await connection.query(alterDatabaseQuery);
+    connection.release();
     return res.status(200).json(RESPONSE.OK());
   } catch (error) {
     return res.status(500).json(RESPONSE.INTERNAL_SERVER_ERROR());

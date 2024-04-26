@@ -1,16 +1,16 @@
 import express, { Request, Response } from "express";
+import { RESPONSE } from "@/utilities/response";
 import {
-  alterMysqlDatabase,
+  getMysqlDatabases,
+  getMysqlDatabaseInfo,
   createMysqlDatabase,
   dropMysqlDatabase,
-  getMysqlDatabase,
-  getMysqlDatabases,
-} from "@/services/root-user-services/root-mysql-database-services";
-import { RESPONSE } from "@/utilities/response";
+  alterMysqlDatabase,
+} from "@/services/non-root-user-services/database-services";
 
-const ROOT_DB = express();
+const DB = express();
 
-ROOT_DB.post("/", async (req: Request, res: Response) => {
+DB.post("/", async (req: Request, res: Response) => {
   const { action } = req.query;
   if (typeof action !== "string") {
     return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
@@ -20,7 +20,7 @@ ROOT_DB.post("/", async (req: Request, res: Response) => {
       await getMysqlDatabases(req, res);
       break;
     case "schema":
-      await getMysqlDatabase(req, res);
+      await getMysqlDatabaseInfo(req, res);
       break;
     case "add":
       await createMysqlDatabase(req, res);
@@ -36,4 +36,4 @@ ROOT_DB.post("/", async (req: Request, res: Response) => {
   }
 });
 
-export default ROOT_DB;
+export default DB;

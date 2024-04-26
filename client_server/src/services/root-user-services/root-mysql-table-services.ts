@@ -1,8 +1,8 @@
 import dotenv from "dotenv";
 dotenv.config();
 import { Request, Response } from "express";
-import { RESPONSE } from "../../utilities/response";
-import { pool } from "../../config/db-connection";
+import { RESPONSE } from "@/utilities/response";
+import { pool } from "@/config/db-connection";
 
 const connection = pool();
 

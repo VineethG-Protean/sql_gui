@@ -1,11 +1,11 @@
 import express, { Request, Response } from "express";
 import {
   mySqlServerStats
-} from "../services/server-services";
+} from "@/services/server-services";
 
 const SERVER = express();
 
-SERVER.get("/connect", async (req: Request, res: Response) => {
+SERVER.get("/connect", async (_: Request, res: Response) => {
   res.status(200).json({});
 });
 

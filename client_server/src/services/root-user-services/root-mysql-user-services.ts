@@ -1,12 +1,12 @@
 import dotenv from "dotenv";
 dotenv.config();
 import { Request, Response } from "express";
-import { RESPONSE } from "../../utilities/response";
-import { pool } from "../../config/db-connection";
+import { RESPONSE } from "@/utilities/response";
+import { pool } from "@/config/db-connection";
 
 const connection = pool();
 
-export const getMysqlUsers = async (req: Request, res: Response) => {
+export const getMysqlUsers = async (_: Request, res: Response) => {
   try {
     const [users] = await connection.query("SELECT * FROM mysql.user");
     if (users) return res.status(200).json(RESPONSE.OK("DATA RETURNED", users));

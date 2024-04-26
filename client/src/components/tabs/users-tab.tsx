@@ -17,7 +17,6 @@ import {
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -26,9 +25,9 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "../ui/input";
 
-import { getMysqlUsersAPI } from "../api/serverApi";
+import { dropMysqlUserAPI, getMysqlUsersAPI } from "../api/mysqlUserApi";
 import { Button } from "../ui/button";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, Trash } from "lucide-react";
 import AddMySqlUserDialog from "../dialogs/add-mysqluser-dialog";
 import { useToast } from "../ui/use-toast";
 
@@ -42,7 +41,7 @@ const UsersTab = () => {
 
   const handleFetchMysqlUsers = async () => {
     try {
-      const response = await getMysqlUsersAPI(activeServer.id);
+      const response = await getMysqlUsersAPI({ server_id: activeServer.id });
       setMysqlUsers(response.data.DATA);
       toast({
         title: "Server Action",
@@ -56,6 +55,23 @@ const UsersTab = () => {
       });
     }
   };
+
+  const handleDropMysqlUser = async (name: string, host: string) => {
+    try {
+      const response = await dropMysqlUserAPI({ server_id: activeServer.id, name, host });
+      setMysqlUsers(response.data.DATA);
+      toast({
+        title: "Server Action",
+        description: "Users has been dropped successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Server Action",
+        description: "Something went wrong",
+        variant: "destructive",
+      });
+    }
+  }
 
   useEffect(() => {
     if (activeServer.id) handleFetchMysqlUsers();
@@ -87,14 +103,11 @@ const UsersTab = () => {
               mysqlUsers.map((user, index) => (
                 <div
                   key={index}
-                  className="px-4 py-2 hover:bg-primary rounded-md cursor-pointer transition-colors"
-                  onClick={() => {
-                    {
-                      setSelectedUser(user), console.log(user);
-                    }
-                  }}
+                  className="px-4 py-2 flex items-center justify-between hover:bg-primary rounded-md cursor-pointer transition-colors"
+                  onClick={() => setSelectedUser(user)}
                 >
-                  {user.User}
+                  <p className="text-xs">{user.User}</p>
+                  <Trash className="h-3 w-3" onClick={() => handleDropMysqlUser(user.User, user.Host)} />
                 </div>
               ))
             ) : (
@@ -147,13 +160,14 @@ const UsersTab = () => {
       </CardContent>
 
       <AddMySqlUserDialog
+        server_id={activeServer.id}
         dialogState={addMysqlUserDialogState}
         setDialogState={() =>
           setAddMysqlUserDialogState(!addMysqlUserDialogState)
         }
         fetchMysqlUsers={handleFetchMysqlUsers}
       />
-    </Card>
+    </Card >
   );
 };
 

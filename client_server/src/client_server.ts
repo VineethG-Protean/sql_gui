@@ -5,12 +5,14 @@ import http from "http";
 import { Server } from "socket.io";
 import dotenv from "dotenv";
 dotenv.config();
+import 'module-alias/register';
 
-import { serverUtilization } from "./services/server-services";
+import { serverUtilization } from "@/services/server-services";
 import ROOT_USER from "./routes/root-user-routes/root-mysql-user-routes";
 import ROOT_DB from "./routes/root-user-routes/root-mysql-database-routes";
 import ROOT_TABLE from "./routes/root-user-routes/root-mysql-tables-routes";
 import SERVER from "./routes/server";
+import DB from "./routes/non-root-user-routes/mysql-database-routes";
 
 const app: Express = express();
 const port = process.env.SERVER_PORT;
@@ -47,8 +49,8 @@ app.use("/root/database", ROOT_DB);
 app.use("/root/table", ROOT_TABLE);
 
 app.use("/server", SERVER);
-// app.use("/database", SERVER);
-// app.use("/table", SERVER);
+app.use("/database", DB);
+// app.use("/table", );
 
 server.listen(port, () =>
   console.log(`⚡ | Server is running at http://localhost:${port}`)

@@ -5,8 +5,8 @@ import {
   dropTable,
   getAllTables,
   getSchema,
-} from "../../services/root-user-services/root-mysql-table-services";
-import { RESPONSE } from "../../utilities/response";
+} from "@/services/root-user-services/root-mysql-table-services";
+import { RESPONSE } from "@/utilities/response";
 
 const ROOT_TABLE = express();
 

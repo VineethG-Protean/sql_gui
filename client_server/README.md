@@ -10,13 +10,13 @@ port: 3001
 ## ROOT ENDPOINTS
 
 #### USER
-**Get all mysql users**\
-Method: `GET`\
-Path: `/root/user`
-
-**Create a mysql user**\
+**Get Mysql Users**\
 Method: `POST`\
-Path: `/root/user`
+Path: `/root/user?action="get"`
+
+**Create Myql User**\
+Method: `POST`\
+Path: `/root/user?action="add"`
 
 ```
 {
@@ -28,9 +28,9 @@ Path: `/root/user`
 }
 ```
 
-**Drop a mysql user**\
+**Drop Mysql User**\
 Method: `POST`\
-Path: `/root/user/delete`
+Path: `/root/user?action="drop"`
 ```
 {
   name:string,
@@ -40,15 +40,15 @@ Path: `/root/user/delete`
 
 #### DATABASE
 
-**Get all databases**\
+**Get Mysql Databases**\
 Method: `POST`\
 Path: `/root/database?action="get"`
 
-**Get individual database information**\
+**Get Mysql Database Schema**\
 Method: `POST`\
 Path: `/root/database?action="schema"`
 
-**Create a new database**\
+**Create Mysql Database**\
 Method: `POST`\
 Path: `/root/database?action="add"`
 
@@ -65,11 +65,11 @@ Path: `/root/database?action="add"`
 }
 ```
 
-**Drop a database**\
+**Drop Mysql Database**\
 Method: `POST`\
 Path: `/root/database?action="drop"`
 
-**Alter a database**\
+**Alter Mysql Database**\
 Method: `POST`\
 Path: `/root/database?action="alter"`
 
@@ -88,11 +88,11 @@ Path: `/root/database?action="alter"`
 
 #### TABLE
 
-**Get All Tables**\
+**Get All Mysql Tables**\
 Method: `POST`\
 Path: `/root/table?action="get"`
 
-**Get table schema**\
+**Get Mysql Table Schema**\
 Method: `POST`\
 Path: `/root/table?action="schema"`
 ```
@@ -102,7 +102,7 @@ Path: `/root/table?action="schema"`
 }
 ```
 
-**Create a table**\
+**Create Mysql Table**\
 Method: `POST`\
 Path: `/root/table?action="add"`
 
@@ -121,7 +121,7 @@ Path: `/root/table?action="add"`
 }
 ```
 
-**Drop a table**\
+**Drop Mysql Table**\
 Method: `POST`\
 Path: `/root/table?action="drop"`
 ```
@@ -131,7 +131,7 @@ Path: `/root/table?action="drop"`
 }
 ```
 
-**Alter Table Schema**\
+**Alter Mysql Table Schema**\
 Method: `POST`\
 Path: `/root/table?action="alter"`
 
@@ -153,7 +153,7 @@ Path: `/root/table?action="alter"`
 
 #### TABLE DATA
 
-**Get Table Data**\
+**Get Mysql Table Data**\
 Method: `POST`\
 Path: `/root/table/data?action="get"`
 
@@ -164,7 +164,7 @@ Path: `/root/table/data?action="get"`
 }
 ```
 
-**Add Table Data**\
+**Add Mysql Table Data**\
 Method: `POST`\
 Path: `/root/table/data?action="add"`
 
@@ -179,7 +179,7 @@ Path: `/root/table/data?action="add"`
 }
 ```
 
-**Delete Table Data**\
+**Delete Mysql Table Data**\
 Method: `POST`\
 Path: `/root/table/data?action="drop"`
 
@@ -191,12 +191,279 @@ Path: `/root/table/data?action="drop"`
 }
 ```
 
-**Alter Table Data**\
+**Alter Mysql Table Data**\
 Method: `PUT`\
 Path: `/root/table/data?action="alter"`
 
 ```
 {
+  dbName:string,
+  tableName:string,
+  alterations:string
+}
+```
+
+## NON ROOT ENDPOINTS
+
+#### DATABASE
+
+**Get Mysql Databases**\
+Method: `POST`\
+Path: `/database?action="get"`
+```
+{
+  credentials : {
+    host:string,
+    username:string,
+    password:string,
+    database:string
+  }
+}
+```
+
+**Get Mysql Database Schema**\
+Method: `POST`\
+Path: `/database?action="schema"`
+```
+{
+  credentials : {
+    host:string,
+    username:string,
+    password:string,
+    database:string
+  }
+}
+```
+
+**Create Mysql Database**\
+Method: `POST`\
+Path: `/database?action="add"`
+
+```
+{   
+  credentials : {
+    host:string,
+    username:string,
+    password:string,
+    database:string
+  },
+  name:string,
+  characterSet:string,
+  defaultCharSet:string,
+  collate:string,
+  defaultCollate:string,
+  encryption:string,
+  defaultEncryption:string,
+  engine:string
+}
+```
+
+**Drop Mysql Database**\
+Method: `POST`\
+Path: `/database?action="drop"`
+```
+{
+  credentials : {
+    host:string,
+    username:string,
+    password:string,
+    database:string
+  }
+}
+```
+
+**Alter Mysql Database**\
+Method: `POST`\
+Path: `/database?action="alter"`
+
+```
+{  
+  credentials : {
+    host:string,
+    username:string,
+    password:string,
+    database:string
+  },
+  name:string,
+  characterSet:string,
+  defaultCharSet:string,
+  collate:string,
+  defaultCollate:string,
+  encryption:string,
+  defaultEncryption:string,
+  engine:string
+}
+```
+
+#### TABLE
+
+**Get All Mysql Tables**\
+Method: `POST`\
+Path: `/table?action="get"`
+```
+{
+  credentials : {
+    host:string,
+    username:string,
+    password:string,
+    database:string
+  }
+}
+```
+
+**Get Mysql Table Schema**\
+Method: `POST`\
+Path: `/table?action="schema"`
+```
+{
+  credentials : {
+    host:string,
+    username:string,
+    password:string,
+    database:string
+  }
+  dbName:string,
+  tableName:string
+}
+```
+
+**Create Mysql Table**\
+Method: `POST`\
+Path: `/table?action="add"`
+
+```
+{
+  credentials : {
+    host:string,
+    username:string,
+    password:string,
+    database:string
+  }
+  databaseName:string,
+  tableName:string
+  columns: [
+    {
+      columnName:string,
+      dataType:string,
+      constraints:string[],
+      key:string
+    }
+  ]
+}
+```
+
+**Drop Mysql Table**\
+Method: `POST`\
+Path: `/table?action="drop"`
+```
+{
+  credentials : {
+    host:string,
+    username:string,
+    password:string,
+    database:string
+  }
+  dbName:string,
+  tableName:string
+}
+```
+
+**Alter Mysql Table Schema**\
+Method: `POST`\
+Path: `/table?action="alter"`
+
+```
+{
+  credentials : {
+    host:string,
+    username:string,
+    password:string,
+    database:string
+  }
+  databaseName:string,
+  tableName:string,
+  alterations:[
+    {
+      type:string,
+      columnName:string,
+      newColumnName:string,
+      dataType:string,
+      constraints:string[]
+    }
+  ]
+}
+```
+
+#### TABLE DATA
+
+**Get Mysql Table Data**\
+Method: `POST`\
+Path: `/table/data?action="get"`
+
+```
+{
+  credentials : {
+    host:string,
+    username:string,
+    password:string,
+    database:string
+  }
+  dbName:string,
+  tableName:string
+}
+```
+
+**Add Mysql Table Data**\
+Method: `POST`\
+Path: `/table/data?action="add"`
+
+```
+{
+  credentials : {
+    host:string,
+    username:string,
+    password:string,
+    database:string
+  }
+  dbName:string,
+  tableName:string
+  data: [
+    row:string,
+    data:string
+  ]
+}
+```
+
+**Delete Mysql Table Data**\
+Method: `POST`\
+Path: `/table/data?action="drop"`
+
+```
+{
+  credentials : {
+    host:string,
+    username:string,
+    password:string,
+    database:string
+  }
+  dbName:string,
+  tableName:string,
+  row:string
+}
+```
+
+**Alter Mysql Table Data**\
+Method: `PUT`\
+Path: `/table/data?action="alter"`
+
+```
+{
+  credentials : {
+    host:string,
+    username:string,
+    password:string,
+    database:string
+  }
   dbName:string,
   tableName:string,
   alterations:string

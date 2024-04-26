@@ -1,13 +1,13 @@
 import dotenv from "dotenv";
 import { Request, Response } from "express";
 
-import { RESPONSE } from "../../utilities/response";
-import { pool } from "../../config/db-connection";
+import { RESPONSE } from "@/utilities/response";
+import { pool } from "@/config/db-connection";
 
 dotenv.config();
 const connection = pool();
 
-export const getMysqlDatabases = async (req: Request, res: Response) => {
+export const getMysqlDatabases = async (_: Request, res: Response) => {
   try {
     const databases = await connection.query("SHOW DATABASES");
     if (!databases) return res.status(404).json(RESPONSE.NOT_FOUND());
@@ -82,7 +82,7 @@ export const createMysqlDatabase = async (req: Request, res: Response) => {
       DEFAULT STORAGE ENGINE = ?
     `;
 
-    const createDatabase = await connection.query(createDatabaseQuery, [
+    await connection.query(createDatabaseQuery, [
       characterSet,
       defaultCharSet,
       collate,
@@ -102,7 +102,7 @@ export const dropMysqlDatabase = async (req: Request, res: Response) => {
   const { dbName } = req.body;
   try {
     const dropDatabaseQuery = `DROP DATABASE IF EXISTS ?`;
-    const dropDatabase = await connection.query(dropDatabaseQuery, [dbName]);
+    await connection.query(dropDatabaseQuery, [dbName]);
     return res
       .status(204)
       .json(RESPONSE.NO_CONTENT("DATABASE HAS BEEN DROPPED"));

@@ -1,45 +1,56 @@
 import express, { Request, Response } from "express";
-import {
-  clientServer_DELETE,
-  clientServer_GET,
-  clientServer_POST,
-  clientServer_PUT,
-} from "../../services/mysql-server-services";
+import { clientServer_POST } from "../../services/mysql-server-services";
 import PrivilegeManager from "../../middlewares/privilege-manager";
 import TokenValidator from "../../middlewares/token-validator";
+import { RESPONSE } from "../../utilities/response";
 
 const MYSQL_DATABASE = express();
 MYSQL_DATABASE.use(TokenValidator);
 MYSQL_DATABASE.use(PrivilegeManager);
 
-MYSQL_DATABASE.get("/:server_id", async (req: Request, res: Response) => {
-  await clientServer_GET(req, res, `${res.locals.privilege}database`);
-});
-
-MYSQL_DATABASE.get("/:server_id/schema", async (req: Request, res: Response) => {
-  const dbName = req.query.dbName;
-  await clientServer_GET(
-    req,
-    res,
-    `${res.locals.privilege}database/schema?dbName=${dbName}`
-  );
-});
-
-MYSQL_DATABASE.post("/:server_id", async (req: Request, res: Response) => {
-  await clientServer_POST(req, res, `${res.locals.privilege}database`);
-});
-
-MYSQL_DATABASE.delete("/:server_id", async (req: Request, res: Response) => {
-  const dbName = req.query.dbName;
-  await clientServer_DELETE(
-    req,
-    res,
-    `${res.locals.privilege}database/drop?dbName=${dbName}`
-  );
-});
-
-MYSQL_DATABASE.put("/:server_id", async (req: Request, res: Response) => {
-  await clientServer_PUT(req, res, `${res.locals.privilege}database`);
+MYSQL_DATABASE.post("/", async (req: Request, res: Response) => {
+  const { action } = req.query;
+  if (typeof action !== "string")
+    return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
+  switch (action) {
+    case "get":
+      await clientServer_POST(
+        req,
+        res,
+        `${res.locals.privilege}database?action=get`
+      );
+      break;
+    case "schema":
+      await clientServer_POST(
+        req,
+        res,
+        `${res.locals.privilege}database?action=schema`
+      );
+      break;
+    case "add":
+      await clientServer_POST(
+        req,
+        res,
+        `${res.locals.privilege}database?action=add`
+      );
+      break;
+    case "drop":
+      await clientServer_POST(
+        req,
+        res,
+        `${res.locals.privilege}database?action=drop`
+      );
+      break;
+    case "alter":
+      await clientServer_POST(
+        req,
+        res,
+        `${res.locals.privilege}database?action=alter`
+      );
+      break;
+    default:
+      return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
+  }
 });
 
 export default MYSQL_DATABASE;

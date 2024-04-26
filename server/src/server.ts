@@ -16,6 +16,7 @@ import { User } from "./entities/User";
 import { encryptPassword } from "./utilities/encryption";
 import MYSQL_DATABASE from "./routes/mysql/database-routes";
 import MYSQL_TABLE from "./routes/mysql/table-routes";
+import MYSQL_TABLE_DATA from "./routes/mysql/table-data-routes";
 
 const app: Express = express();
 const port = process.env.SERVER_PORT;
@@ -41,6 +42,7 @@ app.use("/mysql/stats", STATS);
 app.use("/mysql/user", MYSQL_USER);
 app.use("/mysql/database", MYSQL_DATABASE);
 app.use("/mysql/table", MYSQL_TABLE);
+app.use("/mysql/table/data", MYSQL_TABLE_DATA);
 
 app.get("/test", async (req: Request, res: Response) => {
   const encryptedPassword = await encryptPassword("admin");

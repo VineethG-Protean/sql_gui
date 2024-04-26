@@ -26,13 +26,12 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useToast } from "../ui/use-toast";
-import { createMysqlUserAPI } from "../api/serverApi";
-import { Plus } from "lucide-react";
+import { createMysqlUserAPI } from "../api/mysqlUserApi";
+import { Plus, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
 
 interface AddMySqlUserDialogProps {
+  server_id: string,
   dialogState: boolean;
   setDialogState: () => void;
   fetchMysqlUsers: () => void;
@@ -66,16 +65,17 @@ const TABLE_PRIVILEGES = [
 ];
 
 const AddMySqlUserDialog: React.FC<AddMySqlUserDialogProps> = ({
+  server_id,
   dialogState,
   setDialogState,
   fetchMysqlUsers,
 }) => {
-  const activeServer = useSelector((state: RootState) => state.activeServer);
   const { toast } = useToast();
   const [selectedDatabases, setSelectedDatabases] = useState<any[]>([]);
   const [privileges, setPrivileges] = useState<any[]>([]);
 
   const formSchema = z.object({
+    server_id: z.string(),
     name: z.string().min(2).max(50).trim(),
     password: z.string().min(4).max(50).trim(),
     host: z.string().min(4).max(50).trim(),
@@ -86,6 +86,7 @@ const AddMySqlUserDialog: React.FC<AddMySqlUserDialogProps> = ({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      server_id: server_id,
       name: "",
       password: "",
       host: "",
@@ -95,8 +96,9 @@ const AddMySqlUserDialog: React.FC<AddMySqlUserDialogProps> = ({
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    console.log(values); 
     try {
-      await createMysqlUserAPI({ id: activeServer.id, ...values });
+      await createMysqlUserAPI({ ...values });
       setDialogState();
       toast({
         title: "Server Action",
@@ -180,12 +182,18 @@ const AddMySqlUserDialog: React.FC<AddMySqlUserDialogProps> = ({
                   />
                   <span className="flex flex-wrap gap-2">
                     {privileges.map((priv, index) => (
-                      <p
-                        key={index}
-                        className="p-1 bg-primary rounded-md text-xs text-white"
-                      >
-                        {priv}
-                      </p>
+                      <div className="border border-muted rounded-md px-2 py-0.5 flex gap-2 items-center">
+
+
+                        <p
+                          key={index}
+                          className=" text-[10px] font-semibold tracking-wider text-white"
+                        >
+                          {priv}
+                        </p>
+
+                        <X onClick={() => setPrivileges(privileges.filter((value, _) => value !== priv))} className="w-3 h-3 cursor-pointer" />
+                      </div>
                     ))}
                   </span>
                   <FormField
