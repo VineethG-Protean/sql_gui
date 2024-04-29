@@ -3,7 +3,7 @@
     "target": "ES2020",
     "useDefineForClassFields": true,
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "module": "NodeNext",
+    "module": "Node16",
     "rootDir": "./src",
     "outDir": "./dist",
     "esModuleInterop": true,
@@ -14,7 +14,7 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "composite": true,
-    "moduleResolution": "NodeNext",
+    "moduleResolution": "Node16",
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "paths": {
@@ -22,5 +22,5 @@
     }
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules"]
 }

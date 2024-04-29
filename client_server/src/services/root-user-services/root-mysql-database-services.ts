@@ -48,6 +48,23 @@ export const getMysqlDatabase = async (req: Request, res: Response) => {
   }
 };
 
+export const getMysqlDatabaseUsers = async (req: Request, res: Response) => {
+  const { dbName } = req.body;
+  if (!dbName) return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
+  try {
+    const databaseUsersQuery = `SELECT DISTINCT u.User, u.Host, 
+    d.Db, d.*
+    FROM mysql.user u
+    JOIN mysql.db d ON u.User = d.User
+    WHERE d.Db = ?`
+    const [dataUsers, _] = await connection.query(databaseUsersQuery, [dbName]);
+    if (!dataUsers) return res.status(404).json(RESPONSE.NOT_FOUND());
+    return res.status(200).json(RESPONSE.OK("", dataUsers));
+  } catch (error) {
+    return res.status(500).json(RESPONSE.INTERNAL_SERVER_ERROR());
+  }
+}
+
 export const createMysqlDatabase = async (req: Request, res: Response) => {
   const {
     name,

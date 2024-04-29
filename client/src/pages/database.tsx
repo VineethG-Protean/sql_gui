@@ -16,7 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import DatabaseTab from "@/components/tabs/databases-tab";
 import TablesTab from "@/components/tabs/tables-tab";
-import UsersTab from "@/components/tabs/users-tab";
+import RootUsersTab from "@/components/tabs/root-users-tab";
 
 const Database = () => {
   const user = useSelector((state: RootState) => state.user);
@@ -57,7 +57,7 @@ const Database = () => {
               }}
             >
               <TabsList>
-                <TabsTrigger value="users">Users</TabsTrigger>
+                <TabsTrigger value="users">Root Users</TabsTrigger>
                 <TabsTrigger value="databases">Databases</TabsTrigger>
                 <TabsTrigger value="tables">Tables</TabsTrigger>
               </TabsList>
@@ -87,7 +87,7 @@ const Database = () => {
 
           <Tabs defaultValue={tab} value={tab} className="mt-4">
             <TabsContent value="users">
-              <UsersTab />
+              <RootUsersTab />
             </TabsContent>
             <TabsContent value="databases">
               <DatabaseTab />

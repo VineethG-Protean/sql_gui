@@ -13,6 +13,7 @@ ROOT_USER.post("/", async (req: Request, res: Response) => {
   if (typeof action !== "string") {
     return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
   }
+  console.log(action);
   switch (action) {
     case "get":
       await getMysqlUsers(req, res);

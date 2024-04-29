@@ -21,3 +21,14 @@ export const getMysqlDatabaseSchemaAPI = (data: {
     },
   });
 };
+
+export const getMysqlDatabaseUsersAPI = (data: {
+  server_id: string,
+  dbName: string
+}): Promise<AxiosResponse> => {
+  return axios.post(`/api/mysql/database?action=users`, data, {
+    headers: {
+      "x-access-token": getToken().toString(),
+    },
+  })
+}

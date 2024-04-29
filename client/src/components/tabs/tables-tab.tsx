@@ -21,7 +21,7 @@ const TablesTab = () => {
       <CardContent>
         <ResizablePanelGroup
           direction="horizontal"
-          className="min-h-[620px] rounded-md border"
+          className="min-h-[560px] rounded-md border"
         >
           <ResizablePanel defaultSize={25} className="p-2">
             TABLES LIST

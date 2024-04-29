@@ -31,7 +31,7 @@ import { Plus, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface AddMySqlUserDialogProps {
-  server_id: string,
+  server_id: string;
   dialogState: boolean;
   setDialogState: () => void;
   fetchMysqlUsers: () => void;
@@ -96,7 +96,6 @@ const AddMySqlUserDialog: React.FC<AddMySqlUserDialogProps> = ({
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values); 
     try {
       await createMysqlUserAPI({ ...values });
       setDialogState();
@@ -115,6 +114,7 @@ const AddMySqlUserDialog: React.FC<AddMySqlUserDialogProps> = ({
 
   useEffect(() => {
     form.setValue("privileges", privileges);
+    form.setValue("server_id", server_id.toString());
   }, [privileges]);
 
   return (
@@ -183,8 +183,6 @@ const AddMySqlUserDialog: React.FC<AddMySqlUserDialogProps> = ({
                   <span className="flex flex-wrap gap-2">
                     {privileges.map((priv, index) => (
                       <div className="border border-muted rounded-md px-2 py-0.5 flex gap-2 items-center">
-
-
                         <p
                           key={index}
                           className=" text-[10px] font-semibold tracking-wider text-white"
@@ -192,7 +190,14 @@ const AddMySqlUserDialog: React.FC<AddMySqlUserDialogProps> = ({
                           {priv}
                         </p>
 
-                        <X onClick={() => setPrivileges(privileges.filter((value, _) => value !== priv))} className="w-3 h-3 cursor-pointer" />
+                        <X
+                          onClick={() =>
+                            setPrivileges(
+                              privileges.filter((value, _) => value !== priv)
+                            )
+                          }
+                          className="w-3 h-3 cursor-pointer"
+                        />
                       </div>
                     ))}
                   </span>

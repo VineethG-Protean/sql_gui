@@ -24,7 +24,15 @@ export const getTableData = async (req: Request, res: Response) => {
   }
 };
 
-export const addTableData = async (req: Request, res: Response) => {};
+export const addTableData = async (req: Request, res: Response) => {
+  const { data } = req.body;
+  if (!data) return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
+  try {
+
+  } catch (error) {
+    return res.status(500).json(RESPONSE.INTERNAL_SERVER_ERROR());
+  }
+};
 
 export const deleteTableData = async (req: Request, res: Response) => {
   const { dbName, tableName, row } = req.body;

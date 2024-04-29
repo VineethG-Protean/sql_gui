@@ -5,6 +5,7 @@ import {
   dropMysqlDatabase,
   getMysqlDatabase,
   getMysqlDatabases,
+  getMysqlDatabaseUsers,
 } from "@/services/root-user-services/root-mysql-database-services";
 import { RESPONSE } from "@/utilities/response";
 
@@ -21,6 +22,9 @@ ROOT_DB.post("/", async (req: Request, res: Response) => {
       break;
     case "schema":
       await getMysqlDatabase(req, res);
+      break;
+    case "users":
+      await getMysqlDatabaseUsers(req, res);
       break;
     case "add":
       await createMysqlDatabase(req, res);

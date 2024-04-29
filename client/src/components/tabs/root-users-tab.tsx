@@ -31,7 +31,7 @@ import { PlusCircle, Trash } from "lucide-react";
 import AddMySqlUserDialog from "../dialogs/add-mysqluser-dialog";
 import { useToast } from "../ui/use-toast";
 
-const UsersTab = () => {
+const RootUsersTab = () => {
   const { toast } = useToast();
   const activeServer = useSelector((state: RootState) => state.activeServer);
   const [mysqlUsers, setMysqlUsers] = useState<any[]>([]);
@@ -45,7 +45,7 @@ const UsersTab = () => {
       setMysqlUsers(response.data.DATA);
       toast({
         title: "Server Action",
-        description: "Users data has been fetched successfully",
+        description: "User data has been fetched successfully",
       });
     } catch (error) {
       toast({
@@ -58,12 +58,13 @@ const UsersTab = () => {
 
   const handleDropMysqlUser = async (name: string, host: string) => {
     try {
-      const response = await dropMysqlUserAPI({ server_id: activeServer.id, name, host });
-      setMysqlUsers(response.data.DATA);
+      await dropMysqlUserAPI({ server_id: activeServer.id, name, host });
       toast({
         title: "Server Action",
-        description: "Users has been dropped successfully",
+        description: "User has been dropped successfully",
       });
+      handleFetchMysqlUsers();
+      setSelectedUser(null);
     } catch (error) {
       toast({
         title: "Server Action",
@@ -71,7 +72,7 @@ const UsersTab = () => {
         variant: "destructive",
       });
     }
-  }
+  };
 
   useEffect(() => {
     if (activeServer.id) handleFetchMysqlUsers();
@@ -80,8 +81,8 @@ const UsersTab = () => {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>MySQL Users</CardTitle>
-        <CardDescription>List of MySQL users</CardDescription>
+        <CardTitle>MySQL Root Users</CardTitle>
+        <CardDescription>List of MySQL root users</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-2">
         <div className="flex justify-between items-center">
@@ -96,7 +97,7 @@ const UsersTab = () => {
         </div>
         <ResizablePanelGroup
           direction="horizontal"
-          className="min-h-[620px] rounded-md border"
+          className="rounded-md border min-h-[580px]"
         >
           <ResizablePanel defaultSize={15} className="p-2" minSize={15}>
             {mysqlUsers.length != 0 ? (
@@ -107,7 +108,10 @@ const UsersTab = () => {
                   onClick={() => setSelectedUser(user)}
                 >
                   <p className="text-xs">{user.User}</p>
-                  <Trash className="h-3 w-3" onClick={() => handleDropMysqlUser(user.User, user.Host)} />
+                  <Trash
+                    className="h-3 w-3"
+                    onClick={() => handleDropMysqlUser(user.User, user.Host)}
+                  />
                 </div>
               ))
             ) : (
@@ -125,7 +129,7 @@ const UsersTab = () => {
                   <p>{selectedUser?.Host}</p>
                 </div>
                 <p className="text-center">Global Privileges</p>
-                <ScrollArea className="h-[400px] w-full rounded-md border p-4 mt-4 dark:bg-neutral-900 bg-neutral-100">
+                <ScrollArea className="h-[480px] w-full rounded-md border p-4 mt-4 dark:bg-neutral-900 bg-neutral-100">
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -167,8 +171,8 @@ const UsersTab = () => {
         }
         fetchMysqlUsers={handleFetchMysqlUsers}
       />
-    </Card >
+    </Card>
   );
 };
 
-export default UsersTab;
+export default RootUsersTab;

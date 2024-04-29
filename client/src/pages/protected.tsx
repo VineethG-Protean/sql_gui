@@ -39,7 +39,7 @@ const Protected = () => {
       <TopBar />
       <div className="flex h-full">
         <SideBar />
-        <div className="ms-20 w-full p-6">
+        <div className="ms-20 w-full px-6 py-4">
           <Outlet />
         </div>
       </div>

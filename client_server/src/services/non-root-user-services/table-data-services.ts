@@ -46,7 +46,7 @@ export const addTableData = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteTableData = async (req: Request, res: Response) => {
+export const dropTableData = async (req: Request, res: Response) => {
   const { credentials, dbName, tableName, row } = req.body;
   if (!credentials || !dbName || !tableName || !row)
     return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());

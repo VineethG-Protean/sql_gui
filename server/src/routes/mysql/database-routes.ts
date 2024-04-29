@@ -27,6 +27,9 @@ MYSQL_DATABASE.post("/", async (req: Request, res: Response) => {
         `${res.locals.privilege}database?action=schema`
       );
       break;
+    case "users":
+      await clientServer_POST(req, res, `${res.locals.privilege}database?action=users`);
+      break;
     case "add":
       await clientServer_POST(
         req,
