@@ -83,13 +83,38 @@ Path: `/mysql/stats/`
 Method: `POST`\
 Path: `/mysql/user?action="get"`
 
+```
+{
+  server_id:string,
+}
+```
+
 **Create Mysql User**\
 Method: `POST`\
 Path: `/mysql/user?action="add"`
 
+```
+{
+  server_id:string,
+  name:string,
+  password:string,
+  host:string,
+  database:string
+  privileges:string[]
+}
+```
+
 **Drop Mysql User**\
 Method: `POST`\
 Path: `/mysql/user?action="drop"`
+
+```
+{
+  server_id:string,
+  name:string,
+  host:string
+}
+```
 
 ## MYSQL DATABASE ENDPOINTS
 
@@ -97,9 +122,22 @@ Path: `/mysql/user?action="drop"`
 Method: `POST`\
 Path: `/mysql/database?action="get"`
 
+```
+{
+  server_id:string
+}
+```
+
 **Get Mysql Schema**\
 Method: `POST`\
 Path: `/mysql/database?action="schema"`
+
+```
+{
+  server_id:string,
+  databaseName:string
+}
+```
 
 **Get Mysql Database Users**\
 Method: `POST`\
