@@ -7,11 +7,13 @@ import { pool } from "@/config/db-connection";
 const connection = pool();
 
 export const getAllTables = async (req: Request, res: Response) => {
-  const { dbName } = req.body;
-  if (!dbName) return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
+  const { databaseName } = req.body;
+  if (!databaseName)
+    return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
   try {
-    const showTablesQuery = `SHOW TABLES FROM ?`;
-    const tables = await connection.query(showTablesQuery, [dbName]);
+    const sanitizedDatabaseName = databaseName.replace(/[^a-zA-Z0-9_]/g, "");
+    const showTablesQuery = `SHOW TABLES FROM \`${sanitizedDatabaseName}\``;
+    const tables = await connection.query(showTablesQuery);
     if (!tables) return res.status(404).json(RESPONSE.NOT_FOUND());
     return res.status(200).json(RESPONSE.OK("DATA RETURNED", tables));
   } catch (error) {
@@ -20,11 +22,16 @@ export const getAllTables = async (req: Request, res: Response) => {
 };
 
 export const getSchema = async (req: Request, res: Response) => {
-  const { dbName, tableName } = req.body;
-  if (!tableName || !dbName)
+  const { databaseName, tableName } = req.body;
+  if (!tableName || !databaseName)
     return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
   try {
-    const schema = await connection.query(`DESCRIBE ?.?`, [dbName, tableName]);
+    const schema = await connection.query(
+      `DESCRIBE ${databaseName.replace(
+        /[^a-zA-Z0-9_]/g,
+        ""
+      )}.${tableName.replace(/[^a-zA-Z0-9_]/g, "")}`
+    );
     if (!schema) return res.status(404).json(RESPONSE.NOT_FOUND());
     return res.status(200).json(RESPONSE.OK("DATA RETURNED", schema));
   } catch (error) {
@@ -62,12 +69,12 @@ export const createTable = async (req: Request, res: Response) => {
 };
 
 export const dropTable = async (req: Request, res: Response) => {
-  const { dbName, tableName } = req.body;
-  if (!dbName || !tableName)
+  const { databaseName, tableName } = req.body;
+  if (!databaseName || !tableName)
     return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
   try {
     const result = await connection.query(`DROP TABLE ?.?`, [
-      dbName,
+      databaseName,
       tableName,
     ]);
     if (result)

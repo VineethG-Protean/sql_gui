@@ -54,3 +54,19 @@ export const mySqlServerStats = async (_: Request, res: Response) => {
     return res.status(500).json(RESPONSE.INTERNAL_SERVER_ERROR());
   }
 };
+
+export const mysqlCollatAndCharSet = async (_: Request, res: Response) => {
+  try {
+    const charcterSet = await connection.query("SHOW CHARACTER SET");
+    const collation = await connection.query("SHOW COLLATION");
+
+    return res.status(200).json(
+      RESPONSE.OK("DATA RETURNED", {
+        CHARACTER_SET: charcterSet,
+        COLLATION: collation,
+      })
+    );
+  } catch (error) {
+    return res.status(500).json(RESPONSE.INTERNAL_SERVER_ERROR());
+  }
+};

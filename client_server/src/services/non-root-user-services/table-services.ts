@@ -5,8 +5,8 @@ import { RESPONSE } from "@/utilities/response";
 import { privatePool } from "@/config/db-connection";
 
 export const getAllTables = async (req: Request, res: Response) => {
-  const { credentials, dbName } = req.body;
-  if (!credentials || !dbName)
+  const { credentials, databaseName } = req.body;
+  if (!credentials || !databaseName)
     return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
   try {
     const connection = await privatePool(
@@ -17,7 +17,7 @@ export const getAllTables = async (req: Request, res: Response) => {
     ).getConnection();
 
     const showTablesQuery = `SHOW TABLES FROM ?`;
-    const tables = await connection.query(showTablesQuery, [dbName]);
+    const tables = await connection.query(showTablesQuery, [databaseName]);
     if (!tables) return res.status(404).json(RESPONSE.NOT_FOUND());
     connection.release();
     return res.status(200).json(RESPONSE.OK("DATA RETURNED", tables));
@@ -27,8 +27,8 @@ export const getAllTables = async (req: Request, res: Response) => {
 };
 
 export const getSchema = async (req: Request, res: Response) => {
-  const { credentials, dbName, tableName } = req.body;
-  if (!credentials || !tableName || !dbName)
+  const { credentials, databaseName, tableName } = req.body;
+  if (!credentials || !tableName || !databaseName)
     return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
   try {
     const connection = await privatePool(
@@ -37,7 +37,7 @@ export const getSchema = async (req: Request, res: Response) => {
       credentials.password,
       credentials.database
     ).getConnection();
-    const schema = await connection.query(`DESCRIBE ?.?`, [dbName, tableName]);
+    const schema = await connection.query(`DESCRIBE ?.?`, [databaseName, tableName]);
     if (!schema) return res.status(404).json(RESPONSE.NOT_FOUND());
     connection.release();
     return res.status(200).json(RESPONSE.OK("DATA RETURNED", schema));
@@ -82,8 +82,8 @@ export const createTable = async (req: Request, res: Response) => {
 };
 
 export const dropTable = async (req: Request, res: Response) => {
-  const { credentials, dbName, tableName } = req.body;
-  if (!credentials || !dbName || !tableName)
+  const { credentials, databaseName, tableName } = req.body;
+  if (!credentials || !databaseName || !tableName)
     return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
   try {
     const connection = await privatePool(
@@ -93,7 +93,7 @@ export const dropTable = async (req: Request, res: Response) => {
       credentials.database
     ).getConnection();
     const result = await connection.query(`DROP TABLE ?.?`, [
-      dbName,
+      databaseName,
       tableName,
     ]);
 

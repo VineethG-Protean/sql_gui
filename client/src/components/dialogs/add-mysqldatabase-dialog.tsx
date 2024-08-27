@@ -28,6 +28,10 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "../ui/use-toast";
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import { getServerCharSet } from "../api/serverApi";
+import { createMysqlDatabaseAPI } from "../api/mysqlDatabaseApi";
 
 interface AddMySqlDatabaseDialogProps {
   server_id: string;
@@ -44,11 +48,16 @@ const AddMySqlDatabaseDialog: React.FC<AddMySqlDatabaseDialogProps> = ({
 }) => {
   const { toast } = useToast();
 
+  const activeServer = useSelector((state: RootState) => state.activeServer);
+
+  const [chartSet, setChartSet] = useState<any[]>([]);
+  const [collation, setCollations] = useState<any[]>([]);
+
   const formSchema = z.object({
     server_id: z.string(),
     name: z.string(),
     characterSet: z.string().min(2).max(50).trim(),
-    collat: z.string().min(4).max(50).trim(),
+    collation: z.string().min(4).max(50).trim(),
     encryption: z.string(),
     engine: z.string(),
   });
@@ -56,16 +65,41 @@ const AddMySqlDatabaseDialog: React.FC<AddMySqlDatabaseDialogProps> = ({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      server_id: server_id,
+      server_id: activeServer.id.toString(),
       name: "",
-      characterSet: "",
-      collat: "",
-      encryption: "",
-      engine: "",
+      characterSet: "utf8mb4",
+      collation: "utf8mb4_0900_ai_ci",
+      encryption: "N",
+      engine: "InnoDB",
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {};
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      form.setValue("server_id", server_id);
+      await createMysqlDatabaseAPI(values);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  async function handleFetchCharSet() {
+    try {
+      const response = await getServerCharSet(activeServer.id);
+      setChartSet(response.data.DATA.CHARACTER_SET[0]);
+      setCollations(response.data.DATA.COLLATION[0]);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    if (activeServer.id && dialogState) handleFetchCharSet();
+  }, [dialogState]);
+
+  useEffect(() => {
+    form.setValue("server_id", activeServer.id.toString());
+  }, [activeServer]);
 
   return (
     <>
@@ -79,6 +113,19 @@ const AddMySqlDatabaseDialog: React.FC<AddMySqlDatabaseDialogProps> = ({
                   onSubmit={form.handleSubmit(onSubmit)}
                   className="flex flex-col gap-3 mt-4"
                 >
+                  <FormField
+                    control={form.control}
+                    name="server_id"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input placeholder="Server" {...field} disabled />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
                   <FormField
                     control={form.control}
                     name="name"
@@ -97,9 +144,26 @@ const AddMySqlDatabaseDialog: React.FC<AddMySqlDatabaseDialogProps> = ({
                     name="characterSet"
                     render={({ field }) => (
                       <FormItem>
-                        <FormControl>
-                          <Input placeholder="Password" {...field} />
-                        </FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="CharSet" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {chartSet.map((val, index) => (
+                              <SelectItem value={val.Charset} key={index}>
+                                <p>{val.Charset}</p>
+                                <p className="text-[10px] text-muted-foreground">
+                                  {val.Description}
+                                </p>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -107,12 +171,29 @@ const AddMySqlDatabaseDialog: React.FC<AddMySqlDatabaseDialogProps> = ({
 
                   <FormField
                     control={form.control}
-                    name="collat"
+                    name="collation"
                     render={({ field }) => (
                       <FormItem>
-                        <FormControl>
-                          <Input placeholder="Collat" {...field} />
-                        </FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Collation" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {collation.map((val, index) => (
+                              <SelectItem value={val.Collation} key={index}>
+                                <p>{val.Collation}</p>
+                                <p className="text-[10px] text-muted-foreground">
+                                  {val.Charset}
+                                </p>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -123,9 +204,21 @@ const AddMySqlDatabaseDialog: React.FC<AddMySqlDatabaseDialogProps> = ({
                     name="encryption"
                     render={({ field }) => (
                       <FormItem>
-                        <FormControl>
-                          <Input placeholder="Encryption" {...field} />
-                        </FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Encryption" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="Y">Yes</SelectItem>
+                            <SelectItem value="N">No</SelectItem>
+                          </SelectContent>
+                        </Select>
+
                         <FormMessage />
                       </FormItem>
                     )}
@@ -135,9 +228,22 @@ const AddMySqlDatabaseDialog: React.FC<AddMySqlDatabaseDialogProps> = ({
                     name="engine"
                     render={({ field }) => (
                       <FormItem>
-                        <FormControl>
-                          <Input placeholder="Engine" {...field} />
-                        </FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Engine" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="InnoDB">InnoDB</SelectItem>
+                            <SelectItem value="MyISAM">MyISAM</SelectItem>
+                            <SelectItem value="Memory">Memory</SelectItem>
+                            <SelectItem value="CSV">CSV</SelectItem>
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}

@@ -27,8 +27,8 @@ export const getMysqlDatabases = async (req: Request, res: Response) => {
 };
 
 export const getMysqlDatabaseInfo = async (req: Request, res: Response) => {
-  const { credentials, dbName } = req.body;
-  if (!credentials || !dbName)
+  const { credentials, databaseName } = req.body;
+  if (!credentials || !databaseName)
     return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
   try {
     const connection = await privatePool(
@@ -38,7 +38,7 @@ export const getMysqlDatabaseInfo = async (req: Request, res: Response) => {
       credentials.database
     ).getConnection();
     const databaseInfoQuery = `SELECT CREATE DATABASE ?`;
-    const databaseInfo = await connection.query(databaseInfoQuery, [dbName]);
+    const databaseInfo = await connection.query(databaseInfoQuery, [databaseName]);
     if (!databaseInfo) res.status(404).json(RESPONSE.NOT_FOUND());
     connection.release();
     return res.status(200).json(RESPONSE.OK("", databaseInfo));
@@ -108,8 +108,8 @@ export const createMysqlDatabase = async (req: Request, res: Response) => {
 };
 
 export const dropMysqlDatabase = async (req: Request, res: Response) => {
-  const { credentials, dbName } = req.body;
-  if (!credentials || !dbName)
+  const { credentials, databaseName } = req.body;
+  if (!credentials || !databaseName)
     return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
 
   try {
@@ -120,7 +120,7 @@ export const dropMysqlDatabase = async (req: Request, res: Response) => {
       credentials.database
     ).getConnection();
     const dropDatabaseQuery = `DROP DATABASE IF EXISTS ?`;
-    await connection.query(dropDatabaseQuery, [dbName]);
+    await connection.query(dropDatabaseQuery, [databaseName]);
     connection.release();
     return res
       .status(204)

@@ -13,4 +13,8 @@ STATS.post("/", async (req: Request, res: Response) => {
   await clientServer_POST(req, res, "/server/stats");
 });
 
+STATS.post("/charset", async (req: Request, res: Response) => {
+  await clientServer_POST(req, res, "/server/charset");
+});
+
 export default STATS;

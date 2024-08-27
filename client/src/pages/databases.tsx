@@ -1,3 +1,32 @@
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+import { setActiveServer } from "@/store/slices/activeServerSlice";
+
+import {
+  getMysqlDatabasesAPI,
+  getMysqlDatabaseInfoAPI,
+  getMysqlDatabaseUsersAPI,
+} from "@/components/api/mysqlDatabaseApi";
+
+import AddMySqlUserDialog from "@/components/dialogs/add-mysqluser-dialog";
+import AddMySqlDatabaseDialog from "@/components/dialogs/add-mysqldatabase-dialog";
+
+import { Table as LucideTable, PlusCircle, Trash } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -5,11 +34,20 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
+import { ScrollArea } from "@radix-ui/react-scroll-area";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -18,32 +56,28 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useToast } from "../ui/use-toast";
 import {
-  getMysqlDatabaseSchemaAPI,
-  getMysqlDatabaseUsersAPI,
-  getMysqlDatabasesAPI,
-} from "../api/mysqlDatabaseApi";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
-import { useEffect, useState } from "react";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import { PlusCircle } from "lucide-react";
-import { ScrollArea } from "../ui/scroll-area";
-import AddMySqlDatabaseDialog from "../dialogs/add-mysqldatabase-dialog";
-import AddMySqlUserDialog from "../dialogs/add-mysqluser-dialog";
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { useToast } from "@/components/ui/use-toast";
 
-const DatabaseTab = () => {
+const Databases = () => {
   const { toast } = useToast();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const activeServer = useSelector((state: RootState) => state.activeServer);
+  const servers = useSelector((state: RootState) => state.servers);
 
   const [addMysqlDatabaseDialogState, setAddMysqlDatabaseDialogState] =
     useState<boolean>(false);
   const [addMysqlUserDialogState, setAddMysqlUserDialogState] =
     useState<boolean>(false);
+  const [dropDatabaseAlertState, setDropDatabaseAlertState] =
+    useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<any>();
-
   const [databaseUsers, setDatabaseUsers] = useState<any[]>([]);
   const [mysqlDatabases, setMysqlDatabases] = useState<any[]>([]);
   const [databaseSchema, setDatabaseSchema] = useState<{
@@ -72,17 +106,17 @@ const DatabaseTab = () => {
     }
   };
 
-  const handleFetchMysqlDatabaseSchema = async (dbName: string) => {
+  const handleFetchMysqlDatabaseInfo = async (databaseName: string) => {
     try {
-      const schema = await getMysqlDatabaseSchemaAPI({
+      const schema = await getMysqlDatabaseInfoAPI({
         server_id: activeServer.id,
-        dbName,
+        databaseName,
       });
       setDatabaseSchema(schema.data.DATA);
 
       const users = await getMysqlDatabaseUsersAPI({
         server_id: activeServer.id,
-        dbName,
+        databaseName,
       });
 
       console.log(users.data.DATA);
@@ -114,19 +148,43 @@ const DatabaseTab = () => {
       <CardContent className="flex flex-col gap-2 h-full">
         <div className="flex justify-between items-center">
           <Input placeholder="Search database ... " className="w-48" />
-          <Button
-            className="flex gap-2 items-center"
-            onClick={() =>
-              setAddMysqlDatabaseDialogState(!addMysqlDatabaseDialogState)
-            }
-          >
-            <p>New</p>
-            <PlusCircle className="h-4 w-4" />
-          </Button>
+          <div className="flex gap-2">
+            <Select
+              defaultValue={activeServer.id}
+              onValueChange={(e) => {
+                const server = servers.find((server, _) => server.id === e);
+                if (server) dispatch(setActiveServer(server));
+              }}
+            >
+              <SelectTrigger className="w-[250px]">
+                <SelectValue placeholder="Please select a server" />
+              </SelectTrigger>
+              <SelectContent>
+                {servers.map((server, index) => (
+                  <SelectItem key={index} value={server.id}>
+                    {server.name}
+                  </SelectItem>
+                ))}
+                {servers.length == 0 && (
+                  <p className="p-2 text-xs text-center">No Servers Found</p>
+                )}
+              </SelectContent>
+            </Select>
+            <Button
+              className="flex gap-2 items-center"
+              onClick={() =>
+                setAddMysqlDatabaseDialogState(!addMysqlDatabaseDialogState)
+              }
+            >
+              <p>New</p>
+              <PlusCircle className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
+
         <ResizablePanelGroup
           direction="horizontal"
-          className="min-h-[580px] rounded-md border"
+          className="min-h-[450px] rounded-md border"
         >
           <ResizablePanel
             defaultSize={15}
@@ -134,21 +192,69 @@ const DatabaseTab = () => {
             minSize={0}
             maxSize={25}
           >
-            {mysqlDatabases.length != 0 ? (
-              mysqlDatabases.map((db, index) => (
-                <div
-                  key={index}
-                  className="px-4 py-2 hover:bg-primary rounded-md cursor-pointer transition-colors"
-                  onClick={() => handleFetchMysqlDatabaseSchema(db.Database)}
-                >
-                  <p className="text-xs">{db.Database}</p>
+            <ScrollArea className="h-[430px] pe-3">
+              {mysqlDatabases.length != 0 ? (
+                <div className="flex flex-col gap-1">
+                  {mysqlDatabases.map((db, index) => (
+                    <div
+                      key={index}
+                      className="px-4 py-2 flex justify-between items-center group hover:bg-primary rounded-md cursor-pointer transition-colors"
+                      onClick={() => handleFetchMysqlDatabaseInfo(db.Database)}
+                    >
+                      <p className="text-xs">{db.Database}</p>
+
+                      <div className="flex gap-2 items-center">
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <Trash
+                                className="h-4 w-4 group-hover:block hidden"
+                                onClick={(e) => [
+                                  e.stopPropagation(),
+                                  setDropDatabaseAlertState(
+                                    !dropDatabaseAlertState
+                                  ),
+                                ]}
+                              />
+                            </TooltipTrigger>
+                            <TooltipContent
+                              side="top"
+                              className="bg-muted text-muted-foreground"
+                            >
+                              <p>Drop Database</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <LucideTable
+                                className="h-4 w-4 group-hover:block hidden"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  navigate(`/database/${db.Database}`);
+                                }}
+                              />
+                            </TooltipTrigger>
+                            <TooltipContent
+                              side="top"
+                              className="bg-muted text-muted-foreground"
+                            >
+                              <p>View Tables</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))
-            ) : (
-              <p className="h-full w-full flex justify-center items-center text-muted-foreground text-3xl">
-                No databases found
-              </p>
-            )}
+              ) : (
+                <p className="h-full w-full flex justify-center items-center text-muted-foreground text-2xl">
+                  No databases found
+                </p>
+              )}
+            </ScrollArea>
           </ResizablePanel>
           <ResizableHandle withHandle />
           <ResizablePanel defaultSize={85} minSize={40} className="p-4">
@@ -167,7 +273,7 @@ const DatabaseTab = () => {
 
             <div className="flex gap-2">
               {databaseUsers.length !== 0 && (
-                <ScrollArea className="h-[430px] w-full rounded-md border p-4 mt-4 dark:bg-neutral-900 bg-neutral-100">
+                <ScrollArea className="h-[350px] w-full rounded-md border p-4 mt-4 dark:bg-neutral-900 bg-neutral-100">
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -251,11 +357,30 @@ const DatabaseTab = () => {
         }
         databases={mysqlDatabases}
         fetchDatabaseUsers={(database: string) =>
-          handleFetchMysqlDatabaseSchema(database)
+          handleFetchMysqlDatabaseInfo(database)
         }
       />
+
+      <AlertDialog
+        open={dropDatabaseAlertState}
+        onOpenChange={() => setDropDatabaseAlertState(!dropDatabaseAlertState)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete
+              database and the data present in database from the server.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction>Continue</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 };
 
-export default DatabaseTab;
+export default Databases;

@@ -8,13 +8,13 @@ import { pool } from "@/config/db-connection";
 const connection = pool();
 
 export const getTableData = async (req: Request, res: Response) => {
-  const { dbName, tableName } = req.body;
-  if (!dbName || !tableName)
+  const { databaseName, tableName } = req.body;
+  if (!databaseName || !tableName)
     return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
   try {
     const selectQuery = `SELECT * FROM ?.?`;
     const selectQueryResults = await connection.query(selectQuery, [
-      dbName,
+      databaseName,
       tableName,
     ]);
     if (!selectQueryResults) return res.status(404).json(RESPONSE.NOT_FOUND());
@@ -35,13 +35,13 @@ export const addTableData = async (req: Request, res: Response) => {
 };
 
 export const deleteTableData = async (req: Request, res: Response) => {
-  const { dbName, tableName, row } = req.body;
-  if (!dbName || !tableName || !row)
+  const { databaseName, tableName, row } = req.body;
+  if (!databaseName || !tableName || !row)
     return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
   try {
     const deleteDataQuery = `DELETE FROM ?.? WHERE ?=?`;
     await connection.query(deleteDataQuery, [
-      dbName,
+      databaseName,
       tableName,
       row.name,
       row.value,
@@ -78,8 +78,8 @@ export const deleteTableData = async (req: Request, res: Response) => {
 */
 
 export const alterTableData = async (req: Request, res: Response) => {
-  const { dbName, tableName, alterations } = req.body;
-  if (!dbName || !tableName || !alterations)
+  const { databaseName, tableName, alterations } = req.body;
+  if (!databaseName || !tableName || !alterations)
     return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
   try {
     const {
@@ -92,7 +92,7 @@ export const alterTableData = async (req: Request, res: Response) => {
         .join(", ");
       const valuesToUpdate = Object.values(alteration);
 
-      const alterTableDataQuery = `UPDATE ${dbName}.${tableName} SET ${columnsToUpdate} WHERE ${identifyColumnName} = ?`;
+      const alterTableDataQuery = `UPDATE ${databaseName}.${tableName} SET ${columnsToUpdate} WHERE ${identifyColumnName} = ?`;
       const queryParams = [...valuesToUpdate, identifyColumnValue];
 
       await connection.query(alterTableDataQuery, queryParams);

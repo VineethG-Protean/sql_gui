@@ -7,7 +7,7 @@ export const getMysqlDatabasesAPI = (data: {
   return axiosInstance.post(`/mysql/database?action=get`, data);
 };
 
-export const getMysqlDatabaseSchemaAPI = (data: {
+export const getMysqlDatabaseInfoAPI = (data: {
   server_id: string;
   databaseName: string;
 }): Promise<AxiosResponse> => {
@@ -15,8 +15,19 @@ export const getMysqlDatabaseSchemaAPI = (data: {
 };
 
 export const getMysqlDatabaseUsersAPI = (data: {
-  server_id: string,
-  databaseName: string
+  server_id: string;
+  databaseName: string;
 }): Promise<AxiosResponse> => {
-  return axiosInstance.post(`/mysql/database?action=users`, data)
-}
+  return axiosInstance.post(`/mysql/database?action=users`, data);
+};
+
+export const createMysqlDatabaseAPI = (data: {
+  server_id: string;
+  name: string;
+  characterSet: string;
+  collation: string;
+  encryption: string;
+  engine: string;
+}): Promise<AxiosResponse> => {
+  return axiosInstance.post(`/mysql/database?action=add`, data);
+};

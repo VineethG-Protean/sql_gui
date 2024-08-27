@@ -111,9 +111,15 @@ Path: `/root/database?action="alter"`
 
 #### TABLE
 
-**Get All Mysql Tables**\
+**Get Mysql Tables**\
 Method: `POST`\
 Path: `/root/table?action="get"`
+
+```
+{
+  databaseName:string,
+}
+```
 
 **Get Mysql Table Schema**\
 Method: `POST`\
@@ -121,7 +127,7 @@ Path: `/root/table?action="schema"`
 
 ```
 {
-  dbName:string,
+  databaseName:string,
   tableName:string
 }
 ```
@@ -132,16 +138,14 @@ Path: `/root/table?action="add"`
 
 ```
 {
-    databaseName:string,
-    tableName:string
-    columns: [
-        {
-            columnName:string,
-            dataType:string,
-            constraints:string[],
-            key:string
-        }
-    ]
+  databaseName:string,
+  tableName:string
+  columns: {
+    columnName:string,
+    dataType:string,
+    constraints:string[],
+    key:string
+  }[]
 }
 ```
 
@@ -151,7 +155,7 @@ Path: `/root/table?action="drop"`
 
 ```
 {
-  dbName:string,
+  databaseName:string,
   tableName:string
 }
 ```
@@ -162,17 +166,15 @@ Path: `/root/table?action="alter"`
 
 ```
 {
-    databaseName:string,
-    tableName:string,
-    alterations:[
-        {
-            type:string,
-            columnName:string,
-            newColumnName:string,
-            dataType:string,
-            constraints:string[]
-        }
-    ]
+  databaseName:string,
+  tableName:string,
+  alterations:{
+    type:string,
+    columnName:string,
+    newColumnName:string,
+    dataType:string,
+    constraints:string[]
+  }[]
 }
 ```
 
@@ -184,7 +186,7 @@ Path: `/root/table/data?action="get"`
 
 ```
 {
-  dbName:string,
+  databaseName:string,
   tableName:string
 }
 ```
@@ -195,7 +197,7 @@ Path: `/root/table/data?action="add"`
 
 ```
 {
-  dbName:string,
+  databaseName:string,
   tableName:string
   data: [
     row:string,
@@ -210,7 +212,7 @@ Path: `/root/table/data?action="drop"`
 
 ```
 {
-  dbName:string,
+  databaseName:string,
   tableName:string,
   row:string
 }
@@ -222,7 +224,7 @@ Path: `/root/table/data?action="alter"`
 
 ```
 {
-  dbName:string,
+  databaseName:string,
   tableName:string,
   alterations:string
 }
@@ -352,7 +354,7 @@ Path: `/table?action="schema"`
     password:string,
     database:string
   }
-  dbName:string,
+  databaseName:string,
   tableName:string
 }
 ```
@@ -371,14 +373,12 @@ Path: `/table?action="add"`
   }
   databaseName:string,
   tableName:string
-  columns: [
-    {
-      columnName:string,
-      dataType:string,
-      constraints:string[],
-      key:string
-    }
-  ]
+  columns: {
+    columnName:string,
+    dataType:string,
+    constraints:string[],
+    key:string
+  }
 }
 ```
 
@@ -394,7 +394,7 @@ Path: `/table?action="drop"`
     password:string,
     database:string
   }
-  dbName:string,
+  databaseName:string,
   tableName:string
 }
 ```
@@ -413,15 +413,13 @@ Path: `/table?action="alter"`
   }
   databaseName:string,
   tableName:string,
-  alterations:[
-    {
-      type:string,
-      columnName:string,
-      newColumnName:string,
-      dataType:string,
-      constraints:string[]
-    }
-  ]
+  alterations:{
+    type:string,
+    columnName:string,
+    newColumnName:string,
+    dataType:string,
+    constraints:string[]
+  }[]
 }
 ```
 
@@ -439,7 +437,7 @@ Path: `/table/data?action="get"`
     password:string,
     database:string
   }
-  dbName:string,
+  databaseName:string,
   tableName:string
 }
 ```
@@ -456,7 +454,7 @@ Path: `/table/data?action="add"`
     password:string,
     database:string
   }
-  dbName:string,
+  databaseName:string,
   tableName:string
   data: [
     row:string,
@@ -477,7 +475,7 @@ Path: `/table/data?action="drop"`
     password:string,
     database:string
   }
-  dbName:string,
+  databaseName:string,
   tableName:string,
   row:string
 }
@@ -495,7 +493,7 @@ Path: `/table/data?action="alter"`
     password:string,
     database:string
   }
-  dbName:string,
+  databaseName:string,
   tableName:string,
   alterations:string
 }

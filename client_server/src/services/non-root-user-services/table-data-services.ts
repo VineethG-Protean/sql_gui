@@ -5,8 +5,8 @@ import { RESPONSE } from "@/utilities/response";
 import { privatePool } from "@/config/db-connection";
 
 export const getTableData = async (req: Request, res: Response) => {
-  const { credentials, dbName, tableName } = req.body;
-  if (!credentials || !dbName || !tableName)
+  const { credentials, databaseName, tableName } = req.body;
+  if (!credentials || !databaseName || !tableName)
     return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
   try {
     const connection = await privatePool(
@@ -18,7 +18,7 @@ export const getTableData = async (req: Request, res: Response) => {
 
     const selectQuery = `SELECT * FROM ?.?`;
     const selectQueryResults = await connection.query(selectQuery, [
-      dbName,
+      databaseName,
       tableName,
     ]);
     if (!selectQueryResults) return res.status(404).json(RESPONSE.NOT_FOUND());
@@ -30,8 +30,8 @@ export const getTableData = async (req: Request, res: Response) => {
 };
 
 export const addTableData = async (req: Request, res: Response) => {
-  const { credentials, dbName, tableName, data } = req.body;
-  if (!credentials || !dbName || !tableName || !data)
+  const { credentials, databaseName, tableName, data } = req.body;
+  if (!credentials || !databaseName || !tableName || !data)
     return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
   try {
     const connection = await privatePool(
@@ -47,8 +47,8 @@ export const addTableData = async (req: Request, res: Response) => {
 };
 
 export const dropTableData = async (req: Request, res: Response) => {
-  const { credentials, dbName, tableName, row } = req.body;
-  if (!credentials || !dbName || !tableName || !row)
+  const { credentials, databaseName, tableName, row } = req.body;
+  if (!credentials || !databaseName || !tableName || !row)
     return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
   try {
     const connection = await privatePool(
@@ -59,7 +59,7 @@ export const dropTableData = async (req: Request, res: Response) => {
     ).getConnection();
     const deleteDataQuery = `DELETE FROM ?.? WHERE ?=?`;
     await connection.query(deleteDataQuery, [
-      dbName,
+      databaseName,
       tableName,
       row.name,
       row.value,
@@ -72,8 +72,8 @@ export const dropTableData = async (req: Request, res: Response) => {
 };
 
 export const alterTableData = async (req: Request, res: Response) => {
-  const { credentials, dbName, tableName, alterations } = req.body;
-  if (!credentials || !dbName || !tableName || !alterations)
+  const { credentials, databaseName, tableName, alterations } = req.body;
+  if (!credentials || !databaseName || !tableName || !alterations)
     return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
   try {
     const connection = await privatePool(

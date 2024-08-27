@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import {
-  mySqlServerStats
+  mysqlCollatAndCharSet,
+  mySqlServerStats,
 } from "@/services/server-services";
 
 const SERVER = express();
@@ -13,4 +14,7 @@ SERVER.post("/stats", async (req: Request, res: Response) => {
   await mySqlServerStats(req, res);
 });
 
+SERVER.post("/charset", async (req: Request, res: Response) => {
+  await mysqlCollatAndCharSet(req, res);
+});
 export default SERVER;

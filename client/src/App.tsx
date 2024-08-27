@@ -2,7 +2,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import { SocketProvider } from "./components/providers/socket-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
-import { Toaster } from "@/components/ui/toaster"
+import { Toaster } from "@/components/ui/toaster";
 
 import AuthGuard from "./guard/auth";
 import Login from "./pages/login";
@@ -10,9 +10,10 @@ import Home from "./pages/home";
 import Protected from "./pages/protected";
 import UserManagement from "./pages/user-management";
 import Settings from "./pages/settings";
-import Database from "./pages/database";
+import Databases from "./pages/databases";
 import Verify from "./pages/verify";
 import ServerManagement from "./pages/server-management";
+import Tables from "./pages/tables";
 
 const router = createBrowserRouter([
   {
@@ -33,7 +34,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/database",
-        element: <AuthGuard children={<Database />} />,
+        element: <AuthGuard children={<Databases />} />,
+      },
+      {
+        path: "/database/:name",
+        element: <AuthGuard children={<Tables />} />,
       },
       {
         path: "/user",

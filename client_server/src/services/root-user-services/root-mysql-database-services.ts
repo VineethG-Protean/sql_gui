@@ -109,7 +109,7 @@ export const createMysqlDatabase = async (req: Request, res: Response) => {
       engine,
     ]);
 
-    res.status(201).json(RESPONSE.CREATED());
+    return res.status(201).json(RESPONSE.CREATED());
   } catch (error) {
     return res.status(500).json(RESPONSE.INTERNAL_SERVER_ERROR());
   }
