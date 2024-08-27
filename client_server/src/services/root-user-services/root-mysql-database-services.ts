@@ -18,11 +18,11 @@ export const getMysqlDatabases = async (_: Request, res: Response) => {
 };
 
 export const getMysqlDatabase = async (req: Request, res: Response) => {
-  const { dbName } = req.body;
-  if (!dbName) return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
+  const { databaseName } = req.body;
+  if (!databaseName) return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
   try {
     const databaseInfoQuery = `SHOW CREATE DATABASE ${connection.escapeId(
-      dbName
+      databaseName
     )}`;
     const [databaseInfoRows]: any = await connection.query(databaseInfoQuery);
 
@@ -37,7 +37,7 @@ export const getMysqlDatabase = async (req: Request, res: Response) => {
     const encryptionMatch = createStatement.match(/DEFAULT ENCRYPTION='(\S+)'/);
     const encryption = encryptionMatch ? encryptionMatch[1] : null;
     const databaseInfo = {
-      name: dbName,
+      name: databaseName,
       characterSet,
       collation,
       encryption,
@@ -49,15 +49,15 @@ export const getMysqlDatabase = async (req: Request, res: Response) => {
 };
 
 export const getMysqlDatabaseUsers = async (req: Request, res: Response) => {
-  const { dbName } = req.body;
-  if (!dbName) return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
+  const { databaseName } = req.body;
+  if (!databaseName) return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
   try {
     const databaseUsersQuery = `SELECT DISTINCT u.User, u.Host, 
     d.Db, d.*
     FROM mysql.user u
     JOIN mysql.db d ON u.User = d.User
     WHERE d.Db = ?`
-    const [dataUsers, _] = await connection.query(databaseUsersQuery, [dbName]);
+    const [dataUsers, _] = await connection.query(databaseUsersQuery, [databaseName]);
     if (!dataUsers) return res.status(404).json(RESPONSE.NOT_FOUND());
     return res.status(200).json(RESPONSE.OK("", dataUsers));
   } catch (error) {
@@ -116,10 +116,10 @@ export const createMysqlDatabase = async (req: Request, res: Response) => {
 };
 
 export const dropMysqlDatabase = async (req: Request, res: Response) => {
-  const { dbName } = req.body;
+  const { databaseName } = req.body;
   try {
     const dropDatabaseQuery = `DROP DATABASE IF EXISTS ?`;
-    await connection.query(dropDatabaseQuery, [dbName]);
+    await connection.query(dropDatabaseQuery, [databaseName]);
     return res
       .status(204)
       .json(RESPONSE.NO_CONTENT("DATABASE HAS BEEN DROPPED"));

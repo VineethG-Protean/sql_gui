@@ -5,11 +5,11 @@ import TokenValidator from "../../middlewares/token-validator";
 const STATS = express();
 STATS.use(TokenValidator);
 
-STATS.get("/connect/:id", async (req: Request, res: Response) => {
+STATS.post("/connect", async (req: Request, res: Response) => {
   await clientServer_POST(req, res, "/server/connect");
 });
 
-STATS.get("/:id", async (req: Request, res: Response) => {
+STATS.post("/", async (req: Request, res: Response) => {
   await clientServer_POST(req, res, "/server/stats");
 });
 

@@ -1,14 +1,10 @@
-import axios, { AxiosResponse } from "axios";
-import { getToken } from "./authApi";
+import { AxiosResponse } from "axios";
+import axiosInstance from "@/lib/axiosInstance";
 
 export const getMysqlUsersAPI = (data: {
   server_id: string;
 }): Promise<AxiosResponse> => {
-  return axios.post(`/api/mysql/user?action=get`, data, {
-    headers: {
-      "x-access-token": getToken().toString(),
-    },
-  });
+  return axiosInstance.post(`/mysql/user?action=get`, data);
 };
 
 export const createMysqlUserAPI = (data: {
@@ -16,14 +12,10 @@ export const createMysqlUserAPI = (data: {
   name: string;
   password: string;
   host: string;
-  database: any;
-  privileges: any;
+  database: string;
+  privileges: string[];
 }): Promise<AxiosResponse> => {
-  return axios.post(`/api/mysql/user?action=add`, data, {
-    headers: {
-      "x-access-token": getToken().toString(),
-    },
-  });
+  return axiosInstance.post(`/mysql/user?action=add`, data);
 };
 
 export const dropMysqlUserAPI = (data: {
@@ -31,9 +23,5 @@ export const dropMysqlUserAPI = (data: {
   name: string;
   host: string;
 }): Promise<AxiosResponse> => {
-  return axios.post(`/api/mysql/user?action=drop`, data, {
-    headers: {
-      "x-access-token": getToken().toString(),
-    },
-  });
+  return axiosInstance.post(`/mysql/user?action=drop`, data);
 };

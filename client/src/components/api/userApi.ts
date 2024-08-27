@@ -1,14 +1,10 @@
-import axios, { AxiosResponse } from "axios";
-import { getToken } from "./authApi";
+import { AxiosResponse } from "axios";
+import axiosInstance from "@/lib/axiosInstance";
 
 export const getUserProfile = (): Promise<AxiosResponse> => {
-  return axios.get(`/api/user`, {
-    headers: { "x-access-token": getToken().toString() },
-  });
+  return axiosInstance.get(`/user`);
 };
 
 export const getAllServersAPI = async (): Promise<AxiosResponse> => {
-  return axios.get(`/api/user/servers`, {
-    headers: { "x-access-token": getToken().toString() },
-  });
+  return axiosInstance.get(`/user/servers`);
 };

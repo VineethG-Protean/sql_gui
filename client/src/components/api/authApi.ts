@@ -1,4 +1,5 @@
-import axios, { AxiosResponse } from "axios";
+import axiosInstance from "@/lib/axiosInstance";
+import { AxiosResponse } from "axios";
 
 export const getToken = (): string => {
   return localStorage.getItem("token") || '';
@@ -21,9 +22,9 @@ export const loginAPI = (data: {
   username: string;
   password: string;
 }): Promise<AxiosResponse> => {
-  return axios.post(`/api/auth/login`, data);
+  return axiosInstance.post(`/auth/login`, data);
 };
 
 export const verifyAPI = (token: string): Promise<AxiosResponse> => {
-  return axios.get(`/api/auth/verify/${token}`);
+  return axiosInstance.get(`/auth/verify/${token}`);
 }

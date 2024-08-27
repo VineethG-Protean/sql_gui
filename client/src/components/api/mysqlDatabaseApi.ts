@@ -1,34 +1,22 @@
-import axios, { AxiosResponse } from "axios";
-import { getToken } from "./authApi";
+import axiosInstance from "@/lib/axiosInstance";
+import { AxiosResponse } from "axios";
 
 export const getMysqlDatabasesAPI = (data: {
   server_id: string;
 }): Promise<AxiosResponse> => {
-  return axios.post(`/api/mysql/database?action=get`, data, {
-    headers: {
-      "x-access-token": getToken().toString(),
-    },
-  });
+  return axiosInstance.post(`/mysql/database?action=get`, data);
 };
 
 export const getMysqlDatabaseSchemaAPI = (data: {
   server_id: string;
-  dbName: string;
+  databaseName: string;
 }): Promise<AxiosResponse> => {
-  return axios.post(`/api/mysql/database?action=schema`, data, {
-    headers: {
-      "x-access-token": getToken().toString(),
-    },
-  });
+  return axiosInstance.post(`/mysql/database?action=schema`, data);
 };
 
 export const getMysqlDatabaseUsersAPI = (data: {
   server_id: string,
-  dbName: string
+  databaseName: string
 }): Promise<AxiosResponse> => {
-  return axios.post(`/api/mysql/database?action=users`, data, {
-    headers: {
-      "x-access-token": getToken().toString(),
-    },
-  })
+  return axiosInstance.post(`/mysql/database?action=users`, data)
 }

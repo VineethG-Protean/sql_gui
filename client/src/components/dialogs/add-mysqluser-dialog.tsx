@@ -34,7 +34,8 @@ interface AddMySqlUserDialogProps {
   server_id: string;
   dialogState: boolean;
   setDialogState: () => void;
-  fetchMysqlUsers: () => void;
+  databases: any[];
+  fetchDatabaseUsers: (database: string) => void;
 }
 
 const TABLE_PRIVILEGES = [
@@ -68,10 +69,10 @@ const AddMySqlUserDialog: React.FC<AddMySqlUserDialogProps> = ({
   server_id,
   dialogState,
   setDialogState,
-  fetchMysqlUsers,
+  databases,
+  fetchDatabaseUsers,
 }) => {
   const { toast } = useToast();
-  const [selectedDatabases, setSelectedDatabases] = useState<any[]>([]);
   const [privileges, setPrivileges] = useState<any[]>([]);
 
   const formSchema = z.object({
@@ -101,9 +102,9 @@ const AddMySqlUserDialog: React.FC<AddMySqlUserDialogProps> = ({
       setDialogState();
       toast({
         title: "Server Action",
-        description: "User has been created",
+        description: "User has been added to database",
       });
-      fetchMysqlUsers();
+      fetchDatabaseUsers("dtabase");
     } catch (error) {
       toast({
         title: "Server Action",
@@ -173,13 +174,28 @@ const AddMySqlUserDialog: React.FC<AddMySqlUserDialogProps> = ({
                     name="database"
                     render={({ field }) => (
                       <FormItem>
-                        <FormControl>
-                          <Input placeholder="Database" {...field} />
-                        </FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Databases" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {databases.map((database, index) => (
+                              <SelectItem value={database.Database} key={index}>
+                                {database.Database}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
+
                   <span className="flex flex-wrap gap-2">
                     {privileges.map((priv, index) => (
                       <div className="border border-muted rounded-md px-2 py-0.5 flex gap-2 items-center">

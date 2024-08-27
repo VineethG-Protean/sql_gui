@@ -16,7 +16,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import DatabaseTab from "@/components/tabs/databases-tab";
 import TablesTab from "@/components/tabs/tables-tab";
-import RootUsersTab from "@/components/tabs/root-users-tab";
 
 const Database = () => {
   const user = useSelector((state: RootState) => state.user);
@@ -26,7 +25,7 @@ const Database = () => {
   const dispatch = useDispatch();
 
   const [authorized, setAuthorized] = useState<boolean>(true);
-  const [tab, setTab] = useState<string>("users");
+  const [tab, setTab] = useState<string>("databases");
 
   useEffect(() => {
     const checkAuthorization = async () => {
@@ -50,14 +49,14 @@ const Database = () => {
         <>
           <div className="w-full flex justify-between items-center">
             <Tabs
-              defaultValue="users"
+              defaultValue="databases"
               className="w-[400px]"
               onValueChange={(e) => {
                 setTab(e);
               }}
             >
               <TabsList>
-                <TabsTrigger value="users">Root Users</TabsTrigger>
+                {/* <TabsTrigger value="users">Root Users</TabsTrigger> */}
                 <TabsTrigger value="databases">Databases</TabsTrigger>
                 <TabsTrigger value="tables">Tables</TabsTrigger>
               </TabsList>
@@ -86,9 +85,9 @@ const Database = () => {
           </div>
 
           <Tabs defaultValue={tab} value={tab} className="mt-4">
-            <TabsContent value="users">
+            {/* <TabsContent value="users">
               <RootUsersTab />
-            </TabsContent>
+            </TabsContent> */}
             <TabsContent value="databases">
               <DatabaseTab />
             </TabsContent>

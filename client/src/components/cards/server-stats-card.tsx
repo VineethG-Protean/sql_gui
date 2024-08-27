@@ -170,14 +170,14 @@ const ServerStatsCard = () => {
                       <p className="text-muted-foreground text-xs font-bold">
                         BASE DIR
                       </p>
-                      <Input value={serverStats.BASE_DIR} />
+                      <Input value={serverStats.BASE_DIR[0][0]["@@basedir"]} />
                     </span>
 
                     <span className="flex flex-col gap-1">
                       <p className="text-muted-foreground text-xs font-bold">
                         DATA DIR
                       </p>
-                      <Input value={serverStats.BASE_DIR} />
+                      <Input value={serverStats.DATA_DIR[0][0]["@@datadir"]} />
                     </span>
                   </div>
                 </div>

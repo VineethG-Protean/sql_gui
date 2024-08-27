@@ -1,32 +1,146 @@
-## AUTH
+```
+protocol: http
+origin: localhost
+port: 3000
+```
 
-http://localhost:3000/auth/login
-http://localhost:3000/auth/verify?token=?
+## AUTH ENDPOINTS
 
-## ADMIN
+**User Login**\
+Method: `POST`\
+Path : `/auth/login`
 
-GET: http://localhost:3000/admin/users
-POST: http://localhost:3000/admin/user/invite
-PUT: http://localhost:3000/admin/user
-DELETE: http://localhost:3000/admin/user/id
-POST: http://localhost:3000/admin/server
-PUT: http://localhost:3000/admin/server
-DELETE: http://localhost:3000/admin/server/id
+```
+{
+  username:string,
+  password:string,
+}
+```
 
-## USER
+**Authentication Verification**\
+Method: `GET`\
+Path: `/auth/verify?token=<token>`
 
-GET: http://localhost:3000/user
-GET: http://localhost:3000/user/servers
+## ADMIN ENDPOINTS
 
-## MYSQL USERS
+**Get All Users**\
+Method: `GET`\
+Path: `/admin/users`
 
-GET: http://localhost:3000/mysql/user/server_id
-POST: http://localhost:3000/mysql/user/server_id
-DELETE: http://localhost:3000/mysql/user/server_id
+**Invite User**\
+Method: `POST`\
+Path: `/admin/user/invite`
 
-## MYSQL DATABASE
+```
+{
+  name:string,
+}
+```
 
-GET: http://localhost:3000/mysql/database/server_id
-GET: http://localhost:3000/mysql/database/server_id?dbName=?
-DELETE: http://localhost:3000/mysql/database/server_id?dbName=?
-PUT: http://localhost:3000/mysql/database/server_id
+**Update User**\
+Method: `PUT`\
+Path: `/admin/user`
+
+**Delete User**\
+Method: `DELETE`\
+Path : `/admin/user/id`
+
+**Create Server**\
+Method: `POST`\
+Path: `/admin/server`
+
+**Update Server**\
+Method: `PUT`\
+Path: `/admin/server`
+
+**Delete Server**\
+Method: `DELETE`\
+Path: `/admin/server/id`
+
+## USER ENDPOINTS
+
+**Get User**\
+Method: `GET`\
+Path: `/user`
+
+**Get Servers**\
+Method: `GET`\
+Path: `/user/servers`
+
+## MYSQL STATS ENDPOINTS
+
+**Check Connection**\
+Method: `POST`\
+Path: `/mysql/stats/connect`
+
+**Get Mysql Stats**\
+Method: `POST`\
+Path: `/mysql/stats/`
+
+## MYSQL USERS ENDPOINTS
+
+**Get Mysql Users**\
+Method: `POST`\
+Path: `/mysql/user?action="get"`
+
+**Create Mysql User**\
+Method: `POST`\
+Path: `/mysql/user?action="add"`
+
+**Drop Mysql User**\
+Method: `POST`\
+Path: `/mysql/user?action="drop"`
+
+## MYSQL DATABASE ENDPOINTS
+
+**Get Mysql Databases**\
+Method: `POST`\
+Path: `/mysql/database?action="get"`
+
+**Get Mysql Schema**\
+Method: `POST`\
+Path: `/mysql/database?action="schema"`
+
+**Get Mysql Database Users**\
+Method: `POST`\
+Path: `/mysql/database?action="users"`
+
+**Create Mysql Database**\
+Method: `POST`\
+Path: `/mysql/database?action="add"`
+
+**Drop Mysql Database**\
+Method: `POST`\
+Path: `/mysql/database/action="drop"`
+
+**Update Mysql Database**\
+Method: `POST`\
+Path: `/mysql/database?action="alter"`
+
+## MYSQL TABLE ENDPOINTS
+
+**Get Mysql Tables**\
+Method: `POST`\
+Path: `/mysql/table?action="get"`
+
+GET: /mysql/table?action=schema
+
+**Create Mysql Table**\
+Method: `POST`\
+Path: `/mysql/table?action="add"`
+
+**Drop Mysql Table**\
+Method: `POST`\
+Path: `/mysql/table?action="drop"`
+
+**Alter Mysql Table**\
+Method: `POST`\
+Path: `/mysql/table?action="alter"`
+
+## MYSQL TABLE DATA
+
+GET: /mysql/table/data?action=get
+GET: /mysql/table/data?action=schema
+POST: /mysql/table/data?action=add
+DELETE: /mysql/table/data?action=drop
+PUt: /mysql/table/data?action=alter

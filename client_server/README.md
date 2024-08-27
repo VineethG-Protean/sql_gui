@@ -6,10 +6,10 @@ origin: localhost
 port: 3001
 ```
 
-
 ## ROOT ENDPOINTS
 
 #### USER
+
 **Get Mysql Users**\
 Method: `POST`\
 Path: `/root/user?action="get"`
@@ -20,17 +20,18 @@ Path: `/root/user?action="add"`
 
 ```
 {
-    name:string,
-    password:string,
-    host:string,
-    database:string,
-    privileges:string[]
+  name:string,
+  password:string,
+  host:string,
+  database:string,
+  privileges:string[]
 }
 ```
 
 **Drop Mysql User**\
 Method: `POST`\
 Path: `/root/user?action="drop"`
+
 ```
 {
   name:string,
@@ -47,6 +48,22 @@ Path: `/root/database?action="get"`
 **Get Mysql Database Schema**\
 Method: `POST`\
 Path: `/root/database?action="schema"`
+
+```
+{
+    databaseName:string
+}
+```
+
+**\*Get Mysql Database Users**\
+Method: `POST`\
+Path: `/root/database?action="user"
+
+```
+{
+    databaseName:string
+}
+```
 
 **Create Mysql Database**\
 Method: `POST`\
@@ -68,6 +85,12 @@ Path: `/root/database?action="add"`
 **Drop Mysql Database**\
 Method: `POST`\
 Path: `/root/database?action="drop"`
+
+```
+{
+    databaseName:string
+}
+```
 
 **Alter Mysql Database**\
 Method: `POST`\
@@ -95,6 +118,7 @@ Path: `/root/table?action="get"`
 **Get Mysql Table Schema**\
 Method: `POST`\
 Path: `/root/table?action="schema"`
+
 ```
 {
   dbName:string,
@@ -124,6 +148,7 @@ Path: `/root/table?action="add"`
 **Drop Mysql Table**\
 Method: `POST`\
 Path: `/root/table?action="drop"`
+
 ```
 {
   dbName:string,
@@ -210,6 +235,7 @@ Path: `/root/table/data?action="alter"`
 **Get Mysql Databases**\
 Method: `POST`\
 Path: `/database?action="get"`
+
 ```
 {
   credentials : {
@@ -224,6 +250,7 @@ Path: `/database?action="get"`
 **Get Mysql Database Schema**\
 Method: `POST`\
 Path: `/database?action="schema"`
+
 ```
 {
   credentials : {
@@ -240,7 +267,7 @@ Method: `POST`\
 Path: `/database?action="add"`
 
 ```
-{   
+{
   credentials : {
     host:string,
     username:string,
@@ -261,6 +288,7 @@ Path: `/database?action="add"`
 **Drop Mysql Database**\
 Method: `POST`\
 Path: `/database?action="drop"`
+
 ```
 {
   credentials : {
@@ -277,7 +305,7 @@ Method: `POST`\
 Path: `/database?action="alter"`
 
 ```
-{  
+{
   credentials : {
     host:string,
     username:string,
@@ -300,6 +328,7 @@ Path: `/database?action="alter"`
 **Get All Mysql Tables**\
 Method: `POST`\
 Path: `/table?action="get"`
+
 ```
 {
   credentials : {
@@ -314,6 +343,7 @@ Path: `/table?action="get"`
 **Get Mysql Table Schema**\
 Method: `POST`\
 Path: `/table?action="schema"`
+
 ```
 {
   credentials : {
@@ -355,6 +385,7 @@ Path: `/table?action="add"`
 **Drop Mysql Table**\
 Method: `POST`\
 Path: `/table?action="drop"`
+
 ```
 {
   credentials : {
@@ -397,7 +428,7 @@ Path: `/table?action="alter"`
 #### TABLE DATA
 
 **Get Mysql Table Data**\
-Method: `POST`\
+Method: `GET`\
 Path: `/table/data?action="get"`
 
 ```

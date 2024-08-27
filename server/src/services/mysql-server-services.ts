@@ -19,7 +19,7 @@ export const clientServer_POST = async (
       .findOneBy({ id: server_id });
     const response: AxiosResponse = await axios.post(
       `${server?.protocol}://${server?.host}:${server?.port}` + endpoint,
-      data
+      data ? data : {}
     );
     return res.status(response.status).json(response.data);
   } catch (error) {

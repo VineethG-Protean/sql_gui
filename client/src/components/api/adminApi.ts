@@ -1,10 +1,8 @@
-import axios, { AxiosResponse } from "axios";
-import { getToken } from "./authApi";
+import { AxiosResponse } from "axios"
+import axiosInstance from "@/lib/axiosInstance";
 
 export const getAllUsersAPI = async (): Promise<AxiosResponse> => {
-  return axios.get(`http://localhost:3000/api/admin/users`, {
-    headers: { "x-access-token": getToken().toString() },
-  });
+  return axiosInstance.get(`/admin/users`);
 };
 
 export const inviteUserAPI = async (data: {
@@ -13,9 +11,7 @@ export const inviteUserAPI = async (data: {
   password: string;
   name: string;
 }): Promise<AxiosResponse> => {
-  return axios.post(`http://localhost:3000/api/admin/user/invite`, data, {
-    headers: { "x-access-token": getToken().toString() },
-  });
+  return axiosInstance.post(`/admin/user/invite`, data);
 };
 
 export const updateUserAPI = async (data: {
@@ -27,15 +23,11 @@ export const updateUserAPI = async (data: {
   is_verified: boolean;
   is_active: boolean;
 }): Promise<AxiosResponse> => {
-  return axios.put(`http://localhost:3000/api/admin/user`, data, {
-    headers: { "x-access-token": getToken().toString() },
-  });
+  return axiosInstance.put(`/admin/user`, data);
 };
 
 export const deleteUserAPI = async (id: number): Promise<AxiosResponse> => {
-  return axios.delete(`http://localhost:3000/api/admin/user/${id}`, {
-    headers: { "x-access-token": getToken().toString() },
-  });
+  return axiosInstance.delete(`/admin/user/${id}`);
 };
 
 export const addServerAPI = async (data: {
@@ -47,9 +39,7 @@ export const addServerAPI = async (data: {
   password: string;
   type: string;
 }): Promise<AxiosResponse> => {
-  return axios.post(`/api/admin/server`, data, {
-    headers: { "x-access-token": getToken().toString() },
-  });
+  return axiosInstance.post(`/admin/server`, data);
 };
 
 export const updateServerAPI = async (data: {
@@ -62,13 +52,9 @@ export const updateServerAPI = async (data: {
   password: string;
   type: string;
 }): Promise<AxiosResponse> => {
-  return axios.put(`/api/admin/server`, data, {
-    headers: { "x-access-token": getToken().toString() },
-  });
+  return axiosInstance.put(`/admin/server`, data);
 };
 
 export const deleteServerAPI = async (id: number): Promise<AxiosResponse> => {
-  return axios.delete(`/api/admin/server/${id}`, {
-    headers: { "x-access-token": getToken().toString() },
-  });
+  return axiosInstance.delete(`/admin/server/${id}`);
 };

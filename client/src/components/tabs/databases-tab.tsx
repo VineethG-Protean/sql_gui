@@ -32,12 +32,15 @@ import { Button } from "../ui/button";
 import { PlusCircle } from "lucide-react";
 import { ScrollArea } from "../ui/scroll-area";
 import AddMySqlDatabaseDialog from "../dialogs/add-mysqldatabase-dialog";
+import AddMySqlUserDialog from "../dialogs/add-mysqluser-dialog";
 
 const DatabaseTab = () => {
   const { toast } = useToast();
   const activeServer = useSelector((state: RootState) => state.activeServer);
 
   const [addMysqlDatabaseDialogState, setAddMysqlDatabaseDialogState] =
+    useState<boolean>(false);
+  const [addMysqlUserDialogState, setAddMysqlUserDialogState] =
     useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<any>();
 
@@ -190,6 +193,9 @@ const DatabaseTab = () => {
                       size="lg"
                       variant="outline"
                       className="bg-transparent border-dotted border-primary text-primary flex gap-4 items-center"
+                      onClick={() =>
+                        setAddMysqlUserDialogState(!addMysqlUserDialogState)
+                      }
                     >
                       <p>Add User</p>
                       <PlusCircle className="w-4 h-4" />
@@ -236,6 +242,17 @@ const DatabaseTab = () => {
           setAddMysqlDatabaseDialogState(!addMysqlDatabaseDialogState)
         }
         fetchMysqlDatabases={handleFetchMysqlDatabases}
+      />
+      <AddMySqlUserDialog
+        server_id={activeServer.id}
+        dialogState={addMysqlUserDialogState}
+        setDialogState={() =>
+          setAddMysqlUserDialogState(!addMysqlUserDialogState)
+        }
+        databases={mysqlDatabases}
+        fetchDatabaseUsers={(database: string) =>
+          handleFetchMysqlDatabaseSchema(database)
+        }
       />
     </Card>
   );
