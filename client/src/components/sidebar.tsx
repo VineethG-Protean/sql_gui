@@ -18,44 +18,32 @@ import {
 
 const sheetMenuItems = [
   {
-    icon: (
-      <SquareKanban className="h-4 w-4 group-hover:text-green-500 transition-all duration-500" />
-    ),
+    icon: <SquareKanban className="h-4 w-4" />,
     name: "Summary",
     path: "/",
   },
   {
-    icon: (
-      <MonitorDot className="h-4 w-4 group-hover:text-green-500 transition-all duration-500" />
-    ),
+    icon: <MonitorDot className="h-4 w-4" />,
     name: "Monitoring",
     path: "/monitoring",
   },
   {
-    icon: (
-      <Database className="h-4 w-4 group-hover:text-green-500 transition-all duration-500" />
-    ),
+    icon: <Database className="h-4 w-4" />,
     name: "Database Management",
     path: "/database",
   },
   {
-    icon: (
-      <User className="h-4 w-4 group-hover:text-green-500 transition-all duration-500" />
-    ),
+    icon: <User className="h-4 w-4" />,
     name: "User Management",
     path: "/user",
   },
   {
-    icon: (
-      <Server className="h-4 w-4 group-hover:text-green-500 transition-all duration-500" />
-    ),
+    icon: <Server className="h-4 w-4" />,
     name: "Server Management",
     path: "/server",
   },
   {
-    icon: (
-      <Settings className="h-4 w-4 group-hover:text-green-500 transition-all duration-500" />
-    ),
+    icon: <Settings className="h-4 w-4" />,
     name: "Settings",
     path: "/settings",
   },

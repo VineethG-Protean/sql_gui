@@ -17,12 +17,14 @@ export const clientServer_POST = async (
     const server = await mySqlSource
       .getRepository(Server)
       .findOneBy({ id: server_id });
+    console.log(`${server?.protocol}://${server?.host}:${server?.port}`);
     const response: AxiosResponse = await axios.post(
       `${server?.protocol}://${server?.host}:${server?.port}` + endpoint,
       data ? data : {}
     );
     return res.status(response.status).json(response.data);
   } catch (error) {
+    console.log(error);
     return res.status(500).json(RESPONSE.INTERNAL_SERVER_ERROR());
   }
 };

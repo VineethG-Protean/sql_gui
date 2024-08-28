@@ -1,16 +1,16 @@
 import express, { Request, Response } from "express";
 
 import {
+  getTableData,
   // addTableData,
   alterTableData,
   deleteTableData,
-  getTableData,
 } from "@/services/root-user-services/root-mysql-table-data-services";
 import { RESPONSE } from "@/utilities/response";
 
 const ROOT_TABLE_DATA = express();
 
-ROOT_TABLE_DATA.post("/data", async (req: Request, res: Response) => {
+ROOT_TABLE_DATA.post("/", async (req: Request, res: Response) => {
   const { action } = req.query;
   if (typeof action !== "string") {
     return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
