@@ -34,14 +34,12 @@ import { getServerCharSet } from "../api/serverApi";
 import { createMysqlDatabaseAPI } from "../api/mysqlDatabaseApi";
 
 interface AddMySqlDatabaseDialogProps {
-  server_id: string;
   dialogState: boolean;
   setDialogState: () => void;
   fetchMysqlDatabases: () => void;
 }
 
 const AddMySqlDatabaseDialog: React.FC<AddMySqlDatabaseDialogProps> = ({
-  server_id,
   dialogState,
   setDialogState,
   fetchMysqlDatabases,
@@ -54,7 +52,7 @@ const AddMySqlDatabaseDialog: React.FC<AddMySqlDatabaseDialogProps> = ({
   const [collation, setCollations] = useState<any[]>([]);
 
   const formSchema = z.object({
-    server_id: z.string(),
+    server_id: z.number(),
     name: z.string(),
     characterSet: z.string().min(2).max(50).trim(),
     collation: z.string().min(4).max(50).trim(),
@@ -65,7 +63,7 @@ const AddMySqlDatabaseDialog: React.FC<AddMySqlDatabaseDialogProps> = ({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      server_id: activeServer.id.toString(),
+      server_id: activeServer.id!,
       name: "",
       characterSet: "utf8mb4",
       collation: "utf8mb4_0900_ai_ci",
@@ -74,22 +72,37 @@ const AddMySqlDatabaseDialog: React.FC<AddMySqlDatabaseDialogProps> = ({
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  async function handleCreateDatabase(values: z.infer<typeof formSchema>) {
     try {
-      form.setValue("server_id", server_id);
+      form.setValue("server_id", activeServer.id!);
       await createMysqlDatabaseAPI(values);
+      fetchMysqlDatabases();
+      form.reset();
+      toast({
+        title: "Server Action",
+        description: "Database created successfully.",
+      });
     } catch (error) {
-      console.log(error);
+      toast({
+        title: "Server Action",
+        description: "Something went wrong while creating database.",
+        variant: "destructive",
+      });
     }
-  };
+  }
 
   async function handleFetchCharSet() {
     try {
-      const response = await getServerCharSet(activeServer.id);
+      const response = await getServerCharSet(activeServer.id!);
       setChartSet(response.data.DATA.CHARACTER_SET[0]);
       setCollations(response.data.DATA.COLLATION[0]);
     } catch (error) {
-      console.log(error);
+      toast({
+        title: "Server Action",
+        description:
+          "Something went wrong while fetching charset and collat list.",
+        variant: "destructive",
+      });
     }
   }
 
@@ -98,7 +111,7 @@ const AddMySqlDatabaseDialog: React.FC<AddMySqlDatabaseDialogProps> = ({
   }, [dialogState]);
 
   useEffect(() => {
-    form.setValue("server_id", activeServer.id.toString());
+    form.setValue("server_id", activeServer.id!);
   }, [activeServer]);
 
   return (
@@ -110,7 +123,7 @@ const AddMySqlDatabaseDialog: React.FC<AddMySqlDatabaseDialogProps> = ({
             <DialogDescription>
               <Form {...form}>
                 <form
-                  onSubmit={form.handleSubmit(onSubmit)}
+                  onSubmit={form.handleSubmit(handleCreateDatabase)}
                   className="flex flex-col gap-3 mt-4"
                 >
                   <FormField

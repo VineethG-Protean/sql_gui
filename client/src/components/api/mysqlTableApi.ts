@@ -2,14 +2,14 @@ import axiosInstance from "@/lib/axiosInstance";
 import { AxiosResponse } from "axios";
 
 export const getMysqlTablesAPI = (data: {
-  server_id: string;
+  server_id: number;
   databaseName: string;
 }): Promise<AxiosResponse> => {
   return axiosInstance.post(`/mysql/table?action=get`, data);
 };
 
 export const getMysqlTableInfoAPI = (data: {
-  server_id: string;
+  server_id: number;
   databaseName: string;
   tableName: string;
 }): Promise<AxiosResponse> => {
@@ -17,7 +17,7 @@ export const getMysqlTableInfoAPI = (data: {
 };
 
 export const createMysqlTableAPI = (data: {
-  server_id: string;
+  server_id: number;
   databaseName: string;
   tableName: string;
   columns: {
@@ -31,7 +31,7 @@ export const createMysqlTableAPI = (data: {
 };
 
 export const dropMysqlTableAPI = (data: {
-  server_id: string;
+  server_id: number;
   databasename: string;
   tableName: string;
 }): Promise<AxiosResponse> => {
@@ -39,7 +39,7 @@ export const dropMysqlTableAPI = (data: {
 };
 
 export const alterMysqlTableAPI = (data: {
-  server_id: string;
+  server_id: number;
   databaseName: string;
   tableName: string;
   alterations: {

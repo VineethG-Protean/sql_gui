@@ -28,7 +28,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Pencil, Trash } from "lucide-react";
 
 const TablesTab = () => {
   const { name } = useParams();
@@ -41,7 +48,7 @@ const TablesTab = () => {
     if (name)
       try {
         const response = await getMysqlTablesAPI({
-          server_id: activeServer.id,
+          server_id: activeServer.id!,
           databaseName: name,
         });
         setTables(response.data.DATA[0]);
@@ -54,7 +61,7 @@ const TablesTab = () => {
     if (name)
       try {
         const response = await getMysqlTableInfoAPI({
-          server_id: activeServer.id,
+          server_id: activeServer.id!,
           databaseName: name,
           tableName,
         });
@@ -80,7 +87,7 @@ const TablesTab = () => {
           className="min-h-[480px] rounded-md border"
         >
           <ResizablePanel defaultSize={25} className="p-2">
-            <ScrollArea className="h-[450px] pe-3">
+            <ScrollArea className="h-[calc(100vh-14.5rem)] pe-3">
               {tables.map((table, index) => (
                 <div
                   key={index}
@@ -89,7 +96,43 @@ const TablesTab = () => {
                   }
                   className="px-4 py-2 flex justify-between items-center group hover:bg-primary rounded-md cursor-pointer transition-colors"
                 >
-                  {table[`Tables_in_${name!}`]}
+                  <p>{table[`Tables_in_${name!}`]}</p>
+
+                  <div className="hidden group-hover:flex gap-2">
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Pencil
+                            className="h-4 w-4"
+                            onClick={(e) => [e.stopPropagation()]}
+                          />
+                        </TooltipTrigger>
+                        <TooltipContent
+                          side="top"
+                          className="bg-muted text-muted-foreground"
+                        >
+                          <p>Update Table</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Trash
+                            className="h-4 w-4 group-hover:block hidden"
+                            onClick={(e) => [e.stopPropagation()]}
+                          />
+                        </TooltipTrigger>
+                        <TooltipContent
+                          side="top"
+                          className="bg-muted text-muted-foreground"
+                        >
+                          <p>Drop Table</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                 </div>
               ))}
             </ScrollArea>

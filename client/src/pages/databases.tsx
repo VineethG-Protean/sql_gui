@@ -9,6 +9,7 @@ import {
   getMysqlDatabasesAPI,
   getMysqlDatabaseInfoAPI,
   getMysqlDatabaseUsersAPI,
+  dropMysqlDatabaseAPI,
 } from "@/components/api/mysqlDatabaseApi";
 
 import AddMySqlUserDialog from "@/components/dialogs/add-mysqluser-dialog";
@@ -24,7 +25,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
@@ -77,8 +77,6 @@ const Databases = () => {
     useState<boolean>(false);
   const [dropDatabaseAlertState, setDropDatabaseAlertState] =
     useState<boolean>(false);
-  const [selectedUser, setSelectedUser] = useState<any>();
-  const [databaseUsers, setDatabaseUsers] = useState<any[]>([]);
   const [mysqlDatabases, setMysqlDatabases] = useState<any[]>([]);
   const [databaseSchema, setDatabaseSchema] = useState<{
     characterSet: string;
@@ -86,11 +84,14 @@ const Databases = () => {
     encryption: string;
     name: string;
   }>();
+  const [selectedDatabase, setSelectedDatabase] = useState<string>("");
+  const [databaseUsers, setDatabaseUsers] = useState<any[]>([]);
+  const [selectedUser, setSelectedUser] = useState<any>();
 
   const handleFetchMysqlDatabases = async () => {
     try {
       const response = await getMysqlDatabasesAPI({
-        server_id: activeServer.id,
+        server_id: activeServer.id!,
       });
       setMysqlDatabases(response.data.DATA[0]);
       toast({
@@ -109,13 +110,13 @@ const Databases = () => {
   const handleFetchMysqlDatabaseInfo = async (databaseName: string) => {
     try {
       const schema = await getMysqlDatabaseInfoAPI({
-        server_id: activeServer.id,
+        server_id: activeServer.id!,
         databaseName,
       });
       setDatabaseSchema(schema.data.DATA);
 
       const users = await getMysqlDatabaseUsersAPI({
-        server_id: activeServer.id,
+        server_id: activeServer.id!,
         databaseName,
       });
 
@@ -124,16 +125,36 @@ const Databases = () => {
 
       toast({
         title: "Server Action",
-        description: "Schema has been fetched successfully",
+        description: "Schema has been fetched successfully.",
       });
     } catch (error) {
       toast({
         title: "Server Action",
-        description: "Something went wrong",
+        description: "Something went wrong.",
         variant: "destructive",
       });
     }
   };
+
+  async function handleDropDatabase(databaseName: string) {
+    try {
+      await dropMysqlDatabaseAPI({
+        server_id: activeServer.id!,
+        databaseName,
+      });
+      handleFetchMysqlDatabases();
+      toast({
+        title: "Server Action",
+        description: "Database has been dropped successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Server Action",
+        description: "Something went wrong.",
+        variant: "destructive",
+      });
+    }
+  }
 
   useEffect(() => {
     if (activeServer.id) handleFetchMysqlDatabases();
@@ -150,9 +171,11 @@ const Databases = () => {
           <Input placeholder="Search database ... " className="w-48" />
           <div className="flex gap-2">
             <Select
-              defaultValue={activeServer.id}
+              defaultValue={activeServer.id?.toString()}
               onValueChange={(e) => {
-                const server = servers.find((server, _) => server.id === e);
+                const server = servers.find(
+                  (server, _) => server.id?.toString() === e
+                );
                 if (server) dispatch(setActiveServer(server));
               }}
             >
@@ -161,7 +184,7 @@ const Databases = () => {
               </SelectTrigger>
               <SelectContent>
                 {servers.map((server, index) => (
-                  <SelectItem key={index} value={server.id}>
+                  <SelectItem key={index} value={server.id!.toString()}>
                     {server.name}
                   </SelectItem>
                 ))}
@@ -184,7 +207,7 @@ const Databases = () => {
 
         <ResizablePanelGroup
           direction="horizontal"
-          className="min-h-[450px] rounded-md border"
+          className="h-[calc(100vh-14.5rem)] rounded-md border"
         >
           <ResizablePanel
             defaultSize={15}
@@ -214,6 +237,7 @@ const Databases = () => {
                                   setDropDatabaseAlertState(
                                     !dropDatabaseAlertState
                                   ),
+                                  setSelectedDatabase(db.Database),
                                 ]}
                               />
                             </TooltipTrigger>
@@ -342,7 +366,6 @@ const Databases = () => {
       </CardContent>
 
       <AddMySqlDatabaseDialog
-        server_id={activeServer.id}
         dialogState={addMysqlDatabaseDialogState}
         setDialogState={() =>
           setAddMysqlDatabaseDialogState(!addMysqlDatabaseDialogState)
@@ -350,7 +373,6 @@ const Databases = () => {
         fetchMysqlDatabases={handleFetchMysqlDatabases}
       />
       <AddMySqlUserDialog
-        server_id={activeServer.id}
         dialogState={addMysqlUserDialogState}
         setDialogState={() =>
           setAddMysqlUserDialogState(!addMysqlUserDialogState)
@@ -375,7 +397,11 @@ const Databases = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction>Continue</AlertDialogAction>
+            <AlertDialogAction
+              onClick={() => handleDropDatabase(selectedDatabase)}
+            >
+              Continue
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

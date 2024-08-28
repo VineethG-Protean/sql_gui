@@ -1,5 +1,5 @@
 export interface Servers {
-  id: string;
+  id: number | null;
   name: string;
   protocol: string;
   host: string;

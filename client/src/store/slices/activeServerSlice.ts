@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Servers } from "@/lib/interfaces";
 
 const initialState: Servers = {
-  id: "",
+  id: null,
   name: "",
   protocol: "",
   host: "",

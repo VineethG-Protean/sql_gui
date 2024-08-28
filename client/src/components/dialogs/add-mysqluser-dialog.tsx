@@ -29,9 +29,10 @@ import { useToast } from "../ui/use-toast";
 import { createMysqlUserAPI } from "../api/mysqlUserApi";
 import { Plus, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 interface AddMySqlUserDialogProps {
-  server_id: string;
   dialogState: boolean;
   setDialogState: () => void;
   databases: any[];
@@ -66,17 +67,19 @@ const TABLE_PRIVILEGES = [
 ];
 
 const AddMySqlUserDialog: React.FC<AddMySqlUserDialogProps> = ({
-  server_id,
   dialogState,
   setDialogState,
   databases,
   fetchDatabaseUsers,
 }) => {
   const { toast } = useToast();
+
+  const activeServer = useSelector((state: RootState) => state.activeServer);
+
   const [privileges, setPrivileges] = useState<any[]>([]);
 
   const formSchema = z.object({
-    server_id: z.string(),
+    server_id: z.number(),
     name: z.string().min(2).max(50).trim(),
     password: z.string().min(4).max(50).trim(),
     host: z.string().min(4).max(50).trim(),
@@ -87,7 +90,7 @@ const AddMySqlUserDialog: React.FC<AddMySqlUserDialogProps> = ({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      server_id: server_id,
+      server_id: activeServer.id!,
       name: "",
       password: "",
       host: "",
@@ -115,7 +118,7 @@ const AddMySqlUserDialog: React.FC<AddMySqlUserDialogProps> = ({
 
   useEffect(() => {
     form.setValue("privileges", privileges);
-    form.setValue("server_id", server_id.toString());
+    form.setValue("server_id", activeServer.id!);
   }, [privileges]);
 
   return (

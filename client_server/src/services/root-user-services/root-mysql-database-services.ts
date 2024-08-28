@@ -69,48 +69,27 @@ export const createMysqlDatabase = async (req: Request, res: Response) => {
   const {
     name,
     characterSet,
-    defaultCharSet,
-    collate,
-    defaultCollate,
+    collation,
     encryption,
-    defaultEncryption,
-    engine,
   } = req.body;
   if (
     !name ||
     !characterSet ||
-    !defaultCharSet ||
-    !collate ||
-    !defaultCollate ||
-    !defaultEncryption ||
-    !encryption ||
-    !engine
+    !collation ||
+    !encryption
   )
     return res.status(422).json(RESPONSE.UNPROCESSABLE_ENTITY());
   try {
     const createDatabaseQuery = `
       CREATE DATABASE ${name}
-      CHARACTER SET = ?
-      DEFAULT CHARACTER SET = ?
-      COLLATE = ?
-      DEFAULT COLLATE = ?
-      ENCRYPTION = ?
-      DEFAULT ENCRYPTION = ?
-      DEFAULT STORAGE ENGINE = ?
+      DEFAULT CHARACTER SET ${characterSet.replace(/[^a-zA-Z0-9_]/g, "")}
+      DEFAULT COLLATE ${collation.replace(/[^a-zA-Z0-9_]/g, "")}
+      ENCRYPTION = '${encryption}'
     `;
-
-    await connection.query(createDatabaseQuery, [
-      characterSet,
-      defaultCharSet,
-      collate,
-      defaultCollate,
-      encryption,
-      defaultEncryption,
-      engine,
-    ]);
-
+    await connection.query(createDatabaseQuery);
     return res.status(201).json(RESPONSE.CREATED());
   } catch (error) {
+    console.log(error);
     return res.status(500).json(RESPONSE.INTERNAL_SERVER_ERROR());
   }
 };
@@ -118,8 +97,8 @@ export const createMysqlDatabase = async (req: Request, res: Response) => {
 export const dropMysqlDatabase = async (req: Request, res: Response) => {
   const { databaseName } = req.body;
   try {
-    const dropDatabaseQuery = `DROP DATABASE IF EXISTS ?`;
-    await connection.query(dropDatabaseQuery, [databaseName]);
+    const dropDatabaseQuery = `DROP DATABASE IF EXISTS ${databaseName.replace(/[^a-zA-Z0-9_]/g, "")}`;
+    await connection.query(dropDatabaseQuery);
     return res
       .status(204)
       .json(RESPONSE.NO_CONTENT("DATABASE HAS BEEN DROPPED"));
@@ -132,48 +111,32 @@ export const alterMysqlDatabase = async (req: Request, res: Response) => {
   const {
     name,
     characterSet,
-    defaultCharSet,
-    collate,
-    defaultCollate,
+    collation,
     encryption,
-    defaultEncryption,
-    engine,
   } = req.body;
 
   if (
     !name ||
     !characterSet ||
-    !defaultCharSet ||
-    !collate ||
-    !defaultCollate ||
-    !defaultEncryption ||
-    !encryption ||
-    !engine
+    !collation ||
+    !encryption
   ) {
     return res.status(422).json({ error: "Missing required parameters" });
   }
 
   try {
     const alterDatabaseQuery = `
-      ALTER DATABASE ?
-      CHARACTER SET = ?
-      DEFAULT CHARACTER SET = ?
-      COLLATE = ?
-      DEFAULT COLLATE = ?
-      ENCRYPTION = ?
-      DEFAULT ENCRYPTION = ?
-      DEFAULT STORAGE ENGINE = ?
+      ALTER DATABASE ${name}
+      CHARACTER SET ${characterSet.replace(/[^a-zA-Z0-9_]/g, "")}
+      COLLATE ${collation.replace(/[^a-zA-Z0-9_]/g, "")}
+      ENCRYPTION = '${encryption.replace(/[^a-zA-Z0-9_]/g, "")}'
     `;
 
     await connection.query(alterDatabaseQuery, [
       name,
       characterSet,
-      defaultCharSet,
-      collate,
-      defaultCollate,
+      collation,
       encryption,
-      defaultEncryption,
-      engine,
     ]);
 
     return res.status(200).json({ message: "Database altered successfully" });
