@@ -185,7 +185,7 @@ const ServerManagement = () => {
                             <AlertDialogFooter>
                               <AlertDialogCancel>Cancel</AlertDialogCancel>
                               <AlertDialogAction
-                                onClick={() => handleDeleteServer(server.id)}
+                                onClick={() => handleDeleteServer(server.id!)}
                               >
                                 Continue
                               </AlertDialogAction>

@@ -32,6 +32,8 @@ import { RefreshCcw } from "lucide-react";
 
 import { Servers } from "@/lib/interfaces";
 import { updateServerAPI } from "../api/adminApi";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 interface EditUserProps {
   dialogState: boolean;
@@ -47,9 +49,10 @@ const EditServerDialog: React.FC<EditUserProps> = ({
   fetchServers,
 }) => {
   const { toast } = useToast();
+  const activeServer = useSelector((state: RootState) => state.activeServer);
 
   const formSchema = z.object({
-    id: z.string().trim(),
+    id: z.number(),
     name: z.string().trim(),
     protocol: z.string().trim(),
     host: z.string().min(2).max(50).trim(),
@@ -62,7 +65,7 @@ const EditServerDialog: React.FC<EditUserProps> = ({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      id: "",
+      id: activeServer.id!,
       name: "",
       protocol: "",
       host: "",
@@ -73,9 +76,9 @@ const EditServerDialog: React.FC<EditUserProps> = ({
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  async function handleUpdateServer() {
     try {
-      await updateServerAPI(values);
+      await updateServerAPI(form.getValues());
       setDialogState();
       toast({
         title: "Server Action",
@@ -89,11 +92,11 @@ const EditServerDialog: React.FC<EditUserProps> = ({
         variant: "destructive",
       });
     }
-  };
+  }
 
   useEffect(() => {
     if (server) {
-      form.setValue("id", server.id.toString());
+      form.setValue("id", server.id!);
       form.setValue("name", server.name);
       form.setValue("protocol", server.protocol);
       form.setValue("host", server.host);
@@ -111,11 +114,20 @@ const EditServerDialog: React.FC<EditUserProps> = ({
           <DialogHeader>
             <DialogTitle>Update server details</DialogTitle>
             <DialogDescription>
-              <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(onSubmit)}
-                  className="flex flex-col gap-3 mt-4"
-                >
+              <Form key={server?.id} {...form}>
+                <form className="flex flex-col gap-3 mt-4">
+                  <FormField
+                    control={form.control}
+                    name="id"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input placeholder="server" disabled {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   <FormField
                     control={form.control}
                     name="name"
@@ -220,6 +232,7 @@ const EditServerDialog: React.FC<EditUserProps> = ({
                   />
 
                   <Button
+                    onClick={handleUpdateServer}
                     type="submit"
                     className="flex gap-2 items-center group"
                   >

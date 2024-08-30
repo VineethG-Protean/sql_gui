@@ -67,7 +67,7 @@ export default function DatabasePageList({
 
   return (
     <div className="h-full">
-      <ScrollArea className="h-[430px] pe-3">
+      <ScrollArea className="h-[calc(100vh-17rem)] pe-3">
         {databases.length != 0 ? (
           <div className="flex flex-col gap-1">
             {databases.map((db, index) => (

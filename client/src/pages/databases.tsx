@@ -88,19 +88,19 @@ const Databases = () => {
   }, [activeServer]);
 
   return (
-    <Card className="w-full">
+    <Card className="w-full h-full">
       <CardHeader>
         <CardTitle>MySQL Databases</CardTitle>
         <CardDescription>List of MySQL databases</CardDescription>
       </CardHeader>
-      <CardContent className="flex flex-col gap-2 h-full">
+      <CardContent className="flex flex-col gap-2">
         <DatabasePageHeader
           handleFetchMysqlDatabases={handleFetchMysqlDatabases}
         />
 
         <ResizablePanelGroup
           direction="horizontal"
-          className="h-[calc(100vh-14.5rem)] rounded-md border"
+          className="rounded-md border"
         >
           <ResizablePanel
             defaultSize={15}

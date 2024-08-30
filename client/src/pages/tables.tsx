@@ -118,7 +118,7 @@ const TablesTab = () => {
   }, []);
 
   return (
-    <Card className="w-full">
+    <Card className="w-full h-full">
       <CardHeader>
         <CardTitle>Tables</CardTitle>
         <CardDescription>List of tables found in '{name}'</CardDescription>
@@ -126,7 +126,7 @@ const TablesTab = () => {
       <CardContent>
         <ResizablePanelGroup
           direction="horizontal"
-          className="h-[calc(100vh-14.5rem)] rounded-md border"
+          className=" rounded-md border"
         >
           <ResizablePanel defaultSize={25} className="p-2">
             <ScrollArea className="h-[calc(100vh-14.5rem)] pe-3">
@@ -146,7 +146,7 @@ const TablesTab = () => {
                           : ""
                       }`}
                     >
-                      <p>{table[`Tables_in_${name!}`]}</p>
+                      <p className="text-xs">{table[`Tables_in_${name!}`]}</p>
 
                       <div className="hidden group-hover:flex gap-2">
                         <TooltipProvider>

@@ -43,7 +43,7 @@ export const addServerAPI = async (data: {
 };
 
 export const updateServerAPI = async (data: {
-  id: string;
+  id: number;
   name: string;
   protocol: string;
   host: string;
